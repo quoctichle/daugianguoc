@@ -1,0 +1,89 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id @default(cuid())
+  googleId  String    @unique
+  email     String    @unique
+  name      String
+  avatarUrl String?
+  role      UserRole  @default(USER)
+  bids      Bid[]
+  winners   Winner[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Rule {
+  id        Int      @id @default(1)
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Product {
+  id              String        @id @default(cuid())
+  productCode     Int?          @unique
+  name            String
+  imageUrl        String?
+  isUsedProduct   Boolean       @default(false)
+  startsAt        DateTime
+  durationMinutes Int
+  winnerCount     Int
+  maxBidsPerUser  Int
+  description     String
+  status          ProductStatus @default(pending)
+  bids            Bid[]
+  winners         Winner[]
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+model Bid {
+  id        String   @id @default(cuid())
+  amount    Int
+  customerId String?
+  productId String
+  userId    String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  winner    Winner?
+  createdAt DateTime @default(now())
+
+  @@index([productId])
+  @@index([userId])
+  @@index([productId, amount])
+}
+
+model Winner {
+  id        String   @id @default(cuid())
+  rank      Int
+  amount    Int
+  productId String
+  userId    String
+  bidId     String   @unique
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bid       Bid      @relation(fields: [bidId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([productId, rank])
+  @@index([productId])
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum ProductStatus {
+  pending
+  active
+  completed
+}

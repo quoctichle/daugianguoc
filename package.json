@@ -1,0 +1,30 @@
+{
+  "name": "daugianguoc",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "node scripts/patch-youch.mjs && nuxt prepare",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:studio": "prisma studio"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.14.0",
+    "jose": "^6.1.3",
+    "nodemailer": "^8.0.1",
+    "nuxt": "^4.3.1",
+    "vite": "^7.3.1",
+    "vue": "^3.5.29",
+    "vue-router": "^4.6.4"
+  },
+  "devDependencies": {
+    "@nuxtjs/tailwindcss": "^6.14.0",
+    "@types/nodemailer": "^7.0.11",
+    "nitropack": "2.13.1",
+    "prisma": "^6.14.0"
+  }
+}

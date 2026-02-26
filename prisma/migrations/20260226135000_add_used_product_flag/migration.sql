@@ -1,0 +1,1 @@
+ALTER TABLE "Product" ADD COLUMN "isUsedProduct" BOOLEAN NOT NULL DEFAULT false;

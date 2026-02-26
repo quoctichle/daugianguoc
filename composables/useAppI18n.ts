@@ -1,0 +1,321 @@
+type Locale = 'vi' | 'en'
+
+type MessageValue = string | { [key: string]: MessageValue }
+type Dictionary = Record<string, MessageValue>
+
+const messages: Record<Locale, Dictionary> = {
+  vi: {
+    common: {
+      brandName: 'Đấu Giá Ngược Sunshine Telecom',
+      admin: 'Quản trị viên',
+      logout: 'Đăng xuất',
+      refresh: 'Làm mới',
+      loading: 'Đang tải...'
+    },
+    auth: {
+      email: 'Email',
+      login: 'Đăng nhập',
+      loginFailed: 'Đăng nhập thất bại.',
+      adminLoginFailed: 'Đăng nhập quản trị thất bại.',
+      userLoginTitle: 'Đăng nhập người dùng',
+      userLoginSubtitle: 'Chỉ cần nhập Gmail để tham gia đấu giá.',
+      adminLoginTitle: 'Đăng nhập quản trị',
+      adminLoginSubtitle: 'Chỉ tài khoản quản trị mới được truy cập bảng điều khiển.',
+      password: 'Mật khẩu',
+      adminLoginButton: 'Đăng nhập quản trị',
+      backToUserLogin: 'Quay về đăng nhập người dùng',
+      adminLoginLink: 'Đăng nhập quản trị'
+    },
+    user: {
+      pageTitle: 'Trang Đấu Giá',
+      noRules: 'Chưa có thể lệ được công bố.',
+      listTitle: 'Danh sách thiết bị đấu giá',
+      activeCount: 'Đang đấu giá: {count}',
+      completedCount: 'Đã kết thúc: {count}',
+      noProducts: 'Chưa có sản phẩm đấu giá.',
+      prevPage: 'Trang trước',
+      nextPage: 'Trang sau',
+      pageOf: 'Trang {page}/{total}',
+      verifyIdTitle: 'Xác thực ID khách hàng',
+      verifyIdDesc: 'Sản phẩm {name} yêu cầu ID khách hàng.',
+      idInputLabel: 'Nhập ID',
+      idInputPlaceholder: 'Nhập ID khách hàng của bạn',
+      idInvalid: 'ID không hợp lệ. Vui lòng nhập chính xác ID khách hàng của bạn',
+      cancel: 'Hủy',
+      confirm: 'Xác nhận'
+    },
+    auction: {
+      backToList: 'Quay lại danh sách',
+      verifyTitle: 'Xác thực ID khách hàng để vào đấu giá',
+      verifySubtitle: 'Sản phẩm này dành cho khách đã sử dụng, vui lòng nhập ID khách hàng.',
+      verifyButton: 'Xác nhận ID',
+      bidSuccess: 'Đặt giá thành công.',
+      bidFailed: 'Không thể đặt giá.',
+      status: {
+        active: 'Đang đấu giá',
+        pending: 'Sắp đấu giá',
+        completed: 'Đã kết thúc'
+      },
+      noImage: 'Chưa có hình ảnh',
+      actionNow: 'Đấu giá ngay',
+      actionView: 'Xem chi tiết phiên đấu giá',
+      usedTurns: 'Lượt đã dùng: {used} / {max}',
+      bidPlaceholder: 'Nhập giá đấu (¥)',
+      placeBid: 'Đặt giá',
+      countdownStartsIn: 'Bắt đầu sau {minutes}m {seconds}s',
+      countdownRemaining: 'Còn {minutes}m {seconds}s',
+      countdownEnded: 'Đã kết thúc',
+      playersTitle: 'Danh sách người chơi',
+      playersCount: '{count} người',
+      hidePriceHint: 'Phiên đang diễn ra: tạm ẩn giá của tất cả người chơi.',
+      winner: 'Người chiến thắng',
+      player: 'Người chơi',
+      noParticipants: 'Chưa có người tham gia đấu giá.',
+      winnerFirstHint: 'Người chiến thắng được hiển thị ở đầu danh sách.',
+      revealAfterEnd: 'Khi kết thúc phiên, giá đấu của từng người sẽ được hiển thị.',
+      popupTitle: '🎉 Chúc mừng người chiến thắng!',
+      popupSubtitle: 'Phiên đấu giá đã kết thúc. Kết quả người thắng như sau:',
+      popupNoWinner: 'Phiên đã kết thúc nhưng chưa có người chiến thắng.'
+    },
+    admin: {
+      loggedIn: 'Đăng nhập',
+      rulesTitle: 'Quản lý thể lệ',
+      rulesPlaceholder: 'Nhập nội dung thể lệ',
+      saveRules: 'Lưu thể lệ',
+      rulesSaved: 'Đã lưu thể lệ.',
+      auctionsTitle: 'Thông tin chi tiết đấu giá',
+      product: 'Sản phẩm',
+      status: 'Trạng thái',
+      totalBids: 'Tổng lượt đấu giá',
+      participants: 'Người tham gia',
+      actions: 'Hành động',
+      viewDetails: 'Xem chi tiết',
+      auctionDetailTitle: 'Chi tiết đấu giá',
+      finalizeWinner: 'Chốt người thắng',
+      loadingDetail: 'Đang tải chi tiết...'
+    },
+    productForm: {
+      title: 'Thêm sản phẩm đấu giá',
+      image: 'Ảnh sản phẩm',
+      name: 'Tên sản phẩm',
+      usedProduct: 'Sản phẩm cho khách đã sử dụng',
+      usedProductHint: 'Tích chọn nếu sản phẩm yêu cầu nhập ID trước khi vào đấu giá',
+      startTime: 'Thời gian bắt đầu',
+      duration: 'Thời gian đấu giá (phút)',
+      winners: 'Số người trúng giải',
+      maxBids: 'Số lượt đấu giá tối đa / người dùng',
+      description: 'Mô tả',
+      saving: 'Đang lưu...',
+      addProduct: 'Thêm sản phẩm',
+      createSuccess: 'Đã thêm sản phẩm đấu giá.',
+      createFailed: 'Không thể tạo sản phẩm.'
+    },
+    productTable: {
+      name: 'Tên sản phẩm',
+      type: 'Loại sản phẩm',
+      start: 'Bắt đầu',
+      status: 'Trạng thái',
+      totalBids: 'Tổng lượt đấu giá',
+      createdAt: 'Tạo lúc',
+      used: 'Đã sử dụng',
+      new: 'Mới'
+    },
+    adminAuctionCard: {
+      totalBids: 'Tổng lượt đấu giá: {count}',
+      uniqueBids: 'Mức giá duy nhất: {count}',
+      minBid: 'Giá thấp nhất: {value}',
+      maxBid: 'Giá cao nhất: {value}',
+      amountStats: 'Các mức giá và số lần xuất hiện',
+      times: '{count} lần',
+      uniqueAmountList: 'Danh sách mức giá duy nhất',
+      noUnique: 'Không có mức giá duy nhất.',
+      winnerList: 'Danh sách người thắng',
+      noWinner: 'Chưa có người thắng.',
+      allBids: 'Danh sách tất cả lượt đấu giá',
+      user: 'Người dùng',
+      customerId: 'ID khách hàng',
+      price: 'Giá',
+      time: 'Thời gian'
+    }
+  },
+  en: {
+    common: {
+      brandName: 'Sunshine Telecom Reverse Auction',
+      admin: 'Admin',
+      logout: 'Log out',
+      refresh: 'Refresh',
+      loading: 'Loading...'
+    },
+    auth: {
+      email: 'Email',
+      login: 'Log in',
+      loginFailed: 'Login failed.',
+      adminLoginFailed: 'Admin login failed.',
+      userLoginTitle: 'User Login',
+      userLoginSubtitle: 'Enter your Gmail to join the auction.',
+      adminLoginTitle: 'Admin Login',
+      adminLoginSubtitle: 'Only admin accounts can access the dashboard.',
+      password: 'Password',
+      adminLoginButton: 'Admin Login',
+      backToUserLogin: 'Back to user login',
+      adminLoginLink: 'Admin login'
+    },
+    user: {
+      pageTitle: 'Auction Page',
+      noRules: 'No rules have been published yet.',
+      listTitle: 'Auction Item List',
+      activeCount: 'Currently auctioning: {count}',
+      completedCount: 'Completed: {count}',
+      noProducts: 'No auction products available.',
+      prevPage: 'Previous',
+      nextPage: 'Next',
+      pageOf: 'Page {page}/{total}',
+      verifyIdTitle: 'Customer ID Verification',
+      verifyIdDesc: 'Product {name} requires a customer ID.',
+      idInputLabel: 'Enter ID',
+      idInputPlaceholder: 'Enter your customer ID',
+      idInvalid: 'Invalid ID. Please use format ID25011503.',
+      cancel: 'Cancel',
+      confirm: 'Confirm'
+    },
+    auction: {
+      backToList: 'Back to list',
+      verifyTitle: 'Verify customer ID to enter auction',
+      verifySubtitle: 'This product is for existing customers. Please enter your customer ID.',
+      verifyButton: 'Verify ID',
+      bidSuccess: 'Bid placed successfully.',
+      bidFailed: 'Unable to place bid.',
+      status: {
+        active: 'Auctioning',
+        pending: 'Starting soon',
+        completed: 'Completed'
+      },
+      noImage: 'No image available',
+      actionNow: 'Bid now',
+      actionView: 'View auction details',
+      usedTurns: 'Used turns: {used} / {max}',
+      bidPlaceholder: 'Enter bid amount (¥)',
+      placeBid: 'Place Bid',
+      countdownStartsIn: 'Starts in {minutes}m {seconds}s',
+      countdownRemaining: '{minutes}m {seconds}s left',
+      countdownEnded: 'Completed',
+      playersTitle: 'Player List',
+      playersCount: '{count} players',
+      hidePriceHint: 'Auction in progress: all bid prices are hidden.',
+      winner: 'Winner',
+      player: 'Player',
+      noParticipants: 'No participants yet.',
+      winnerFirstHint: 'Winners are shown first.',
+      revealAfterEnd: 'Bid prices will be shown when auction ends.',
+      popupTitle: '🎉 Congratulations to the winners!',
+      popupSubtitle: 'This auction has ended. Winning results:',
+      popupNoWinner: 'Auction ended with no winner yet.'
+    },
+    admin: {
+      loggedIn: 'Signed in',
+      rulesTitle: 'Rules Management',
+      rulesPlaceholder: 'Enter rules content',
+      saveRules: 'Save Rules',
+      rulesSaved: 'Rules saved.',
+      auctionsTitle: 'Auction Details',
+      product: 'Product',
+      status: 'Status',
+      totalBids: 'Total Bids',
+      participants: 'Participants',
+      actions: 'Actions',
+      viewDetails: 'View Details',
+      auctionDetailTitle: 'Auction Detail',
+      finalizeWinner: 'Finalize Winner',
+      loadingDetail: 'Loading details...'
+    },
+    productForm: {
+      title: 'Add Auction Product',
+      image: 'Product Image',
+      name: 'Product Name',
+      usedProduct: 'Used-product for existing customers',
+      usedProductHint: 'Check this if customer ID is required before entering auction',
+      startTime: 'Start Time',
+      duration: 'Auction Duration (minutes)',
+      winners: 'Number of winners',
+      maxBids: 'Max bids per user',
+      description: 'Description',
+      saving: 'Saving...',
+      addProduct: 'Add Product',
+      createSuccess: 'Auction product added.',
+      createFailed: 'Unable to create product.'
+    },
+    productTable: {
+      name: 'Product Name',
+      type: 'Product Type',
+      start: 'Start',
+      status: 'Status',
+      totalBids: 'Total Bids',
+      createdAt: 'Created At',
+      used: 'Used',
+      new: 'New'
+    },
+    adminAuctionCard: {
+      totalBids: 'Total bids: {count}',
+      uniqueBids: 'Unique bids: {count}',
+      minBid: 'Lowest bid: {value}',
+      maxBid: 'Highest bid: {value}',
+      amountStats: 'Bid amounts and frequencies',
+      times: '{count} times',
+      uniqueAmountList: 'Unique amount list',
+      noUnique: 'No unique bids.',
+      winnerList: 'Winner list',
+      noWinner: 'No winner yet.',
+      allBids: 'All bids',
+      user: 'User',
+      customerId: 'Customer ID',
+      price: 'Price',
+      time: 'Time'
+    }
+  }
+}
+
+const getByPath = (obj: Dictionary, path: string): string | undefined => {
+  return path.split('.').reduce<any>((acc, key) => (acc && typeof acc === 'object' ? acc[key] : undefined), obj)
+}
+
+const interpolate = (text: string, params?: Record<string, string | number>) => {
+  if (!params) {
+    return text
+  }
+
+  return text.replace(/\{(\w+)\}/g, (_, key: string) => String(params[key] ?? `{${key}}`))
+}
+
+export const useAppI18n = () => {
+  const locale = useState<Locale>('app-locale', () => 'vi')
+  const initialized = useState<boolean>('app-locale-initialized', () => false)
+
+  if (import.meta.client && !initialized.value) {
+    const saved = localStorage.getItem('site-language')
+    locale.value = saved === 'en' ? 'en' : 'vi'
+    initialized.value = true
+  }
+
+  const setLocale = (nextLocale: Locale) => {
+    locale.value = nextLocale
+    if (import.meta.client) {
+      localStorage.setItem('site-language', nextLocale)
+    }
+  }
+
+  const t = (key: string, params?: Record<string, string | number>) => {
+    const selected = messages[locale.value] || messages.vi
+    const value = getByPath(selected, key)
+    if (!value || typeof value !== 'string') {
+      return key
+    }
+
+    return interpolate(value, params)
+  }
+
+  return {
+    locale,
+    setLocale,
+    t
+  }
+}
