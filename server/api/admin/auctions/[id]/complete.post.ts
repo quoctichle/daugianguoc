@@ -45,24 +45,38 @@ export default defineEventHandler(async (event) => {
       return {
         winnerId: winner.id,
         email: winner.user.email,
-        sent
+        sent,
+        reason: sent ? null : 'Unknown send failure'
       }
     }
     catch (error: any) {
+      const reason = error?.message || 'Email send failed'
       console.error('Failed to send winner email', {
         winnerId: winner.id,
         email: winner.user.email,
-        message: error?.message
+        message: reason
       })
 
       return {
         winnerId: winner.id,
         email: winner.user.email,
-        sent: false
+        sent: false,
+        reason
       }
     }
   })
 
   const emailResults = await Promise.all(emailJobs)
-  return { winners, emailResults }
+  const sentCount = emailResults.filter(item => item.sent).length
+  const failedCount = emailResults.length - sentCount
+
+  return {
+    winners,
+    emailResults,
+    emailSummary: {
+      total: emailResults.length,
+      sent: sentCount,
+      failed: failedCount
+    }
+  }
 })

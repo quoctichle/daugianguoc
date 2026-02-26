@@ -34,6 +34,15 @@ const hasMailerConfig = (config: MailerConfig) => {
   return Boolean(config.smtpHost && config.smtpUser && config.smtpPass && config.mailFrom)
 }
 
+const getMissingMailerConfigKeys = (config: MailerConfig) => {
+  const missing: string[] = []
+  if (!config.smtpHost) missing.push('SMTP_HOST')
+  if (!config.smtpUser) missing.push('SMTP_USER')
+  if (!config.smtpPass) missing.push('SMTP_PASS')
+  if (!config.mailFrom) missing.push('MAIL_FROM')
+  return missing
+}
+
 export const sendWinnerNotificationEmail = async (
   config: MailerConfig,
   payload: {
@@ -45,7 +54,8 @@ export const sendWinnerNotificationEmail = async (
   }
 ) => {
   if (!hasMailerConfig(config)) {
-    return false
+    const missingKeys = getMissingMailerConfigKeys(config)
+    throw new Error(`Missing SMTP configuration: ${missingKeys.join(', ')}`)
   }
 
   const port = toPort(config.smtpPort)
@@ -55,6 +65,9 @@ export const sendWinnerNotificationEmail = async (
     host: config.smtpHost,
     port,
     secure: port === 465,
+    connectionTimeout: 15000,
+    greetingTimeout: 15000,
+    socketTimeout: 20000,
     auth: {
       user: config.smtpUser,
       pass: config.smtpPass

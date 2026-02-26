@@ -18,13 +18,40 @@ const { data, refresh } = await useFetch<any>(() => `/api/admin/auctions/${id.va
   watch: [id]
 })
 
+const finalizeMessage = ref('')
+const finalizeError = ref('')
+
 const refreshDetail = async () => {
   await refresh()
 }
 
 const finalize = async () => {
-  await $fetch(`/api/admin/auctions/${id.value}/complete`, { method: 'POST' })
-  await refresh()
+  finalizeMessage.value = ''
+  finalizeError.value = ''
+
+  try {
+    const result = await $fetch<any>(`/api/admin/auctions/${id.value}/complete`, { method: 'POST' })
+    const summary = result?.emailSummary
+
+    if (summary) {
+      const failed = (result?.emailResults || [])
+        .filter((item: any) => !item.sent)
+        .map((item: any) => `${item.email}: ${item.reason || 'Failed'}`)
+
+      finalizeMessage.value = `Đã chốt winner. Gửi mail thành công ${summary.sent}/${summary.total}.`
+      if (failed.length) {
+        finalizeError.value = failed.join(' | ')
+      }
+    }
+    else {
+      finalizeMessage.value = 'Đã chốt winner.'
+    }
+
+    await refresh()
+  }
+  catch (error: any) {
+    finalizeError.value = error?.data?.statusMessage || 'Không thể chốt winner.'
+  }
 }
 </script>
 
@@ -37,6 +64,13 @@ const finalize = async () => {
         <button class="rounded-lg bg-slate-900 px-3 py-2 text-sm text-white" @click="finalize">{{ t('admin.finalizeWinner') }}</button>
       </div>
     </div>
+
+    <p v-if="finalizeMessage" class="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
+      {{ finalizeMessage }}
+    </p>
+    <p v-if="finalizeError" class="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+      {{ finalizeError }}
+    </p>
 
     <Suspense>
       <AuctionDetailCardAsync v-if="data" :payload="data" />
