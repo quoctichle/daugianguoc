@@ -10,6 +10,7 @@
     "postinstall": "node scripts/patch-youch.mjs && nuxt prepare",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
+    "prisma:deploy": "prisma db push",
     "prisma:studio": "prisma studio"
   },
   "dependencies": {
