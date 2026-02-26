@@ -19,6 +19,15 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Image file is required' })
   }
 
+  const mimeType = imagePart.type || 'application/octet-stream'
+
+  if (process.env.VERCEL) {
+    const base64 = imagePart.data.toString('base64')
+    return {
+      imageUrl: `data:${mimeType};base64,${base64}`
+    }
+  }
+
   const uploadDir = join(process.cwd(), 'public', 'uploads')
   await mkdir(uploadDir, { recursive: true })
 
@@ -26,7 +35,15 @@ export default defineEventHandler(async (event) => {
   const fileName = `${Date.now()}-${crypto.randomUUID()}.${extension}`
   const absolutePath = join(uploadDir, fileName)
 
-  await writeFile(absolutePath, imagePart.data)
+  try {
+    await writeFile(absolutePath, imagePart.data)
+  }
+  catch {
+    const base64 = imagePart.data.toString('base64')
+    return {
+      imageUrl: `data:${mimeType};base64,${base64}`
+    }
+  }
 
   return {
     imageUrl: `/uploads/${fileName}`
