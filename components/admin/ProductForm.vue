@@ -46,6 +46,7 @@ const createProduct = async () => {
       method: 'POST',
       body: {
         ...form,
+        startsAt: new Date(form.startsAt).toISOString(),
         imageUrl
       }
     })
