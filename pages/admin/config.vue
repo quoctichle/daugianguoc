@@ -11,6 +11,8 @@ const { t } = useAppI18n()
 
 const ruleInput = ref('')
 const ruleMessage = ref('')
+const productMessage = ref('')
+const productError = ref('')
 
 const { data: ruleData, refresh: refreshRule } = await useFetch<{ content: string }>('/api/admin/rules', {
   headers: process.server ? useRequestHeaders(['cookie']) : undefined
@@ -36,7 +38,28 @@ const saveRule = async () => {
 }
 
 const onProductCreated = async () => {
+  productMessage.value = ''
+  productError.value = ''
   await refreshProducts()
+}
+
+const onProductDeleted = async (id: string) => {
+  productMessage.value = ''
+  productError.value = ''
+
+  const confirmed = window.confirm('Bạn có chắc muốn xóa sản phẩm này không?')
+  if (!confirmed) {
+    return
+  }
+
+  try {
+    await $fetch(`/api/admin/products/${id}`, { method: 'DELETE' })
+    productMessage.value = 'Đã xóa sản phẩm.'
+    await refreshProducts()
+  }
+  catch (error: any) {
+    productError.value = error?.data?.statusMessage || 'Không thể xóa sản phẩm.'
+  }
 }
 </script>
 
@@ -58,6 +81,9 @@ const onProductCreated = async () => {
 
     <ProductForm @created="onProductCreated" />
 
-    <ProductTable :products="productsData || []" />
+    <ProductTable :products="productsData || []" @deleted="onProductDeleted" />
+
+    <p v-if="productMessage" class="text-sm text-emerald-600">{{ productMessage }}</p>
+    <p v-if="productError" class="text-sm text-red-600">{{ productError }}</p>
   </section>
 </template>

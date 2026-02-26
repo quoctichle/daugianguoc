@@ -117,6 +117,8 @@ const messages: Record<Locale, Dictionary> = {
       status: 'Trạng thái',
       totalBids: 'Tổng lượt đấu giá',
       createdAt: 'Tạo lúc',
+      actions: 'Hành động',
+      delete: 'Xóa',
       used: 'Đã sử dụng',
       new: 'Mới'
     },
@@ -251,6 +253,8 @@ const messages: Record<Locale, Dictionary> = {
       status: 'Status',
       totalBids: 'Total Bids',
       createdAt: 'Created At',
+      actions: 'Actions',
+      delete: 'Delete',
       used: 'Used',
       new: 'New'
     },
