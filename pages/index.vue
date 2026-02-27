@@ -85,20 +85,21 @@ const scrollEvents = (direction: 'left' | 'right') => {
 </script>
 
 <template>
-  <div class="space-y-12 pb-12">
+  <div class="w-screen relative left-1/2 right-1/2 -mx-[50vw] -mt-8 flex flex-col">
     <!-- Hero Section -->
-    <section class="relative overflow-hidden rounded-3xl bg-slate-900 shadow-2xl shadow-primary-900/20">
+    <section class="relative overflow-hidden bg-slate-900">
       <div class="absolute inset-0">
         <img
           src="/uploads/Banner.jpg"
           alt="Auction Banner"
           class="h-full w-full object-cover opacity-60 transition-transform duration-1000 hover:scale-105"
         >
-        <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
+        <!-- Gradient blending into the events section background (#050505) -->
+        <div class="absolute inset-0 bg-gradient-to-t from-[#050505] via-slate-900/40 to-transparent"></div>
         <div class="absolute inset-0 bg-gradient-to-r from-slate-900/80 via-transparent to-transparent"></div>
       </div>
       
-      <div class="relative z-10 flex min-h-[400px] flex-col justify-center px-8 py-16 sm:px-12 lg:px-16">
+      <div class="relative z-10 mx-auto flex max-w-7xl min-h-[500px] flex-col justify-center px-4 py-20 sm:px-6 lg:px-8">
         <div class="max-w-2xl animate-slide-up">
           <span class="mb-4 inline-flex items-center gap-2 rounded-full bg-primary-500/20 border border-primary-500/30 px-4 py-1.5 text-sm font-semibold text-primary-300 backdrop-blur-md">
             <span class="relative flex h-2 w-2">
@@ -126,71 +127,73 @@ const scrollEvents = (direction: 'left' | 'right') => {
     </section>
 
     <!-- Events Section -->
-    <section v-if="eventsData && eventsData.length > 0" class="animate-slide-up rounded-3xl bg-[#050505] p-8 sm:p-12 shadow-2xl relative overflow-hidden group/section" style="animation-delay: 50ms;">
+    <section v-if="eventsData && eventsData.length > 0" class="relative overflow-hidden bg-[#050505] pb-24 pt-10 group/section">
       <!-- Background Pattern -->
       <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(#00ff66 1px, transparent 1px); background-size: 30px 30px;"></div>
       <div class="absolute inset-0 bg-gradient-to-b from-transparent via-[#050505]/80 to-[#050505]"></div>
 
-      <div class="relative z-10 mb-10 text-center">
-        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-[#00ff66] uppercase drop-shadow-[0_0_15px_rgba(0,255,102,0.3)]">
-          {{ t('user.ongoingEvents') }}
-        </h2>
-      </div>
-      
-      <div class="relative z-10">
-        <!-- Navigation Buttons -->
-        <button 
-          @click="scrollEvents('left')"
-          class="absolute left-0 top-1/2 -translate-y-1/2 -ml-4 sm:-ml-6 z-20 flex h-12 w-12 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm border border-white/10 hover:bg-[#00ff66] hover:text-black transition-all opacity-0 group-hover/section:opacity-100 disabled:opacity-0"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-          </svg>
-        </button>
-
-        <button 
-          @click="scrollEvents('right')"
-          class="absolute right-0 top-1/2 -translate-y-1/2 -mr-4 sm:-mr-6 z-20 flex h-12 w-12 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm border border-white/10 hover:bg-[#00ff66] hover:text-black transition-all opacity-0 group-hover/section:opacity-100 disabled:opacity-0"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-          </svg>
-        </button>
-
-        <!-- Scroll Container -->
-        <div 
-          ref="eventsScrollContainer"
-          class="flex gap-8 overflow-x-auto snap-x snap-mandatory pb-4"
-          style="scrollbar-width: none; -ms-overflow-style: none;"
-          @scroll="handleScroll"
-        >
-          <a
-            v-for="event in infiniteEvents"
-            :key="event.uniqueKey"
-            :href="event.link || '#'"
-            class="group flex flex-col overflow-hidden transition-all duration-300 hover:-translate-y-2 snap-start shrink-0 w-full sm:w-[calc(50%-1rem)] lg:w-[calc(25%-1.5rem)]"
+      <div class="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="mb-12 text-center animate-slide-up" style="animation-delay: 50ms;">
+          <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-[#00ff66] uppercase drop-shadow-[0_0_15px_rgba(0,255,102,0.3)]">
+            {{ t('user.ongoingEvents') }}
+          </h2>
+        </div>
+        
+        <div class="relative z-10 animate-slide-up" style="animation-delay: 100ms;">
+          <!-- Navigation Buttons -->
+          <button 
+            @click="scrollEvents('left')"
+            class="absolute left-0 top-1/2 -translate-y-1/2 -ml-4 sm:-ml-6 z-20 flex h-12 w-12 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm border border-white/10 hover:bg-[#00ff66] hover:text-black transition-all opacity-0 group-hover/section:opacity-100 disabled:opacity-0"
           >
-            <div class="aspect-square w-full overflow-hidden rounded-xl border border-white/10 shadow-lg shadow-black/50">
-              <img
-                v-if="event.imageUrl"
-                :src="event.imageUrl"
-                :alt="event.title"
-                class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
-              >
-              <div v-else class="flex h-full w-full items-center justify-center bg-slate-800 text-slate-500">
-                Chưa có ảnh
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+            </svg>
+          </button>
+
+          <button 
+            @click="scrollEvents('right')"
+            class="absolute right-0 top-1/2 -translate-y-1/2 -mr-4 sm:-mr-6 z-20 flex h-12 w-12 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm border border-white/10 hover:bg-[#00ff66] hover:text-black transition-all opacity-0 group-hover/section:opacity-100 disabled:opacity-0"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+            </svg>
+          </button>
+
+          <!-- Scroll Container -->
+          <div 
+            ref="eventsScrollContainer"
+            class="flex gap-8 overflow-x-auto snap-x snap-mandatory pb-4"
+            style="scrollbar-width: none; -ms-overflow-style: none;"
+            @scroll="handleScroll"
+          >
+            <a
+              v-for="event in infiniteEvents"
+              :key="event.uniqueKey"
+              :href="event.link || '#'"
+              class="group flex flex-col overflow-hidden transition-all duration-300 hover:-translate-y-2 snap-start shrink-0 w-full sm:w-[calc(50%-1rem)] lg:w-[calc(25%-1.5rem)]"
+            >
+              <div class="aspect-square w-full overflow-hidden rounded-xl border border-white/10 shadow-lg shadow-black/50">
+                <img
+                  v-if="event.imageUrl"
+                  :src="event.imageUrl"
+                  :alt="event.title"
+                  class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                >
+                <div v-else class="flex h-full w-full items-center justify-center bg-slate-800 text-slate-500">
+                  Chưa có ảnh
+                </div>
               </div>
-            </div>
-            
-            <div class="mt-5 flex flex-col text-center px-2">
-              <h3 class="mb-3 text-base font-bold leading-snug text-white uppercase group-hover:text-[#00ff66] transition-colors line-clamp-2">
-                {{ event.title }}
-              </h3>
-              <p class="line-clamp-4 text-sm text-gray-400 leading-relaxed">
-                {{ event.description }}
-              </p>
-            </div>
-          </a>
+              
+              <div class="mt-5 flex flex-col text-center px-2">
+                <h3 class="mb-3 text-base font-bold leading-snug text-white uppercase group-hover:text-[#00ff66] transition-colors line-clamp-2">
+                  {{ event.title }}
+                </h3>
+                <p class="line-clamp-4 text-sm text-gray-400 leading-relaxed">
+                  {{ event.description }}
+                </p>
+              </div>
+            </a>
+          </div>
         </div>
       </div>
     </section>
