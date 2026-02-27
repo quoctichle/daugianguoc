@@ -156,19 +156,25 @@ const confirmProductId = () => {
     </section>
 
     <!-- Events Section -->
-    <section v-if="eventsData && eventsData.length > 0" class="animate-slide-up" style="animation-delay: 50ms;">
-      <div class="mb-8 text-center">
-        <h2 class="text-3xl font-black tracking-tight text-slate-900 uppercase text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-primary-400">{{ t('user.ongoingEvents') }}</h2>
+    <section v-if="eventsData && eventsData.length > 0" class="animate-slide-up rounded-3xl bg-[#050505] p-8 sm:p-12 shadow-2xl relative overflow-hidden" style="animation-delay: 50ms;">
+      <!-- Background Pattern -->
+      <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(#00ff66 1px, transparent 1px); background-size: 30px 30px;"></div>
+      <div class="absolute inset-0 bg-gradient-to-b from-transparent via-[#050505]/80 to-[#050505]"></div>
+
+      <div class="relative z-10 mb-10 text-center">
+        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-[#00ff66] uppercase drop-shadow-[0_0_15px_rgba(0,255,102,0.3)]">
+          {{ t('user.ongoingEvents') }}
+        </h2>
       </div>
       
-      <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <div class="relative z-10 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
         <a
           v-for="event in eventsData"
           :key="event.id"
           :href="event.link || '#'"
-          class="group relative flex flex-col overflow-hidden rounded-2xl bg-slate-900 shadow-xl transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-primary-900/20"
+          class="group flex flex-col overflow-hidden transition-all duration-300 hover:-translate-y-2"
         >
-          <div class="aspect-[4/5] w-full overflow-hidden">
+          <div class="aspect-square w-full overflow-hidden rounded-xl border border-white/10 shadow-lg shadow-black/50">
             <img
               v-if="event.imageUrl"
               :src="event.imageUrl"
@@ -178,14 +184,13 @@ const confirmProductId = () => {
             <div v-else class="flex h-full w-full items-center justify-center bg-slate-800 text-slate-500">
               Chưa có ảnh
             </div>
-            <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent opacity-80"></div>
           </div>
           
-          <div class="absolute bottom-0 left-0 right-0 p-6">
-            <h3 class="mb-2 text-lg font-bold leading-tight text-white group-hover:text-primary-400 transition-colors">
+          <div class="mt-5 flex flex-col text-center px-2">
+            <h3 class="mb-3 text-base font-bold leading-snug text-white uppercase group-hover:text-[#00ff66] transition-colors line-clamp-2">
               {{ event.title }}
             </h3>
-            <p class="line-clamp-3 text-sm text-slate-300">
+            <p class="line-clamp-4 text-sm text-gray-400 leading-relaxed">
               {{ event.description }}
             </p>
           </div>
