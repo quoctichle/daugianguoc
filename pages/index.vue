@@ -16,7 +16,7 @@ const { data: eventsData } = await useFetch<any[]>('/api/events', {
   headers: process.server ? useRequestHeaders(['cookie']) : undefined
 })
 
-const { data: featuredEventsData } = await useFetch<any[]>('/api/featured/events', {
+const { data: featuredNewsData } = await useFetch<any[]>('/api/featured/news', {
   headers: process.server ? useRequestHeaders(['cookie']) : undefined
 })
 
@@ -91,17 +91,17 @@ const scrollEvents = (direction: 'left' | 'right') => {
   }
 }
 
-const featuredTab = ref<'events' | 'products'>('events')
+const featuredTab = ref<'news' | 'products'>('news')
 const featuredScrollContainer = ref<HTMLElement | null>(null)
 
 const activeFeaturedItems = computed(() => {
-  return featuredTab.value === 'events'
-    ? (featuredEventsData.value || [])
+  return featuredTab.value === 'news'
+    ? (featuredNewsData.value || [])
     : (featuredProductsData.value || [])
 })
 
 const hasFeaturedSection = computed(() => {
-  return (featuredEventsData.value?.length || 0) > 0 || (featuredProductsData.value?.length || 0) > 0
+  return (featuredNewsData.value?.length || 0) > 0 || (featuredProductsData.value?.length || 0) > 0
 })
 
 watch(featuredTab, async () => {
@@ -255,10 +255,10 @@ const scrollFeatured = (direction: 'left' | 'right') => {
           <button
             type="button"
             class="rounded-full px-6 py-2 text-sm font-bold uppercase tracking-wide transition-colors"
-            :class="featuredTab === 'events' ? 'bg-[#00ff66] text-black' : 'bg-white/10 text-white hover:bg-white/20'"
-            @click="featuredTab = 'events'"
+            :class="featuredTab === 'news' ? 'bg-[#00ff66] text-black' : 'bg-white/10 text-white hover:bg-white/20'"
+            @click="featuredTab = 'news'"
           >
-            Sự kiện
+            Tin tức
           </button>
           <button
             type="button"

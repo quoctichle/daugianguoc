@@ -3,7 +3,7 @@ const sections = [
   {
     title: 'Quản lý nội dung',
     links: [
-      { label: 'Quản lý sự kiện', to: '/admin/events' },
+      { label: 'Quản lý tin tức', to: '/admin/news' },
       { label: 'Quản lý sản phẩm', to: '/admin/featured-products' }
     ]
   },
