@@ -133,8 +133,8 @@ const confirmProductId = () => {
             </span>
             {{ t('user.activeCount', { count: activeCount }) }}
           </span>
-          <h1 class="mb-6 text-4xl font-black tracking-tight text-white sm:text-5xl lg:text-6xl">
-            {{ t('user.heroTitle') }} <span class="bg-gradient-to-r from-primary-400 to-accent-400 bg-clip-text text-transparent">{{ t('user.heroHighlight') }}</span>
+          <h1 class="mb-6 text-4xl font-black tracking-tight bg-gradient-to-r from-[#a8d08d] to-[#f4d03f] bg-clip-text text-transparent sm:text-5xl lg:text-6xl">
+            {{ t('user.heroTitle') }} {{ t('user.heroHighlight') }}
           </h1>
           <p class="mb-8 text-lg text-slate-300 sm:text-xl">
             {{ t('user.heroSubtitle') }} <span class="font-bold text-accent-400">{{ t('user.heroPrice') }}</span>
