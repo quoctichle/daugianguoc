@@ -38,6 +38,28 @@ export default defineEventHandler(async (event) => {
   if (endsAt <= startsAt) {
     throw createError({ statusCode: 400, statusMessage: 'Thời gian kết thúc phải sau thời gian bắt đầu' })
   }
+
+  const format = 'REVERSE_AUCTION'
+  const overlapEvent = await prisma.event.findFirst({
+    where: {
+      format,
+      startsAt: { lt: endsAt },
+      endsAt: { gt: startsAt }
+    },
+    select: {
+      eventId: true,
+      title: true,
+      startsAt: true,
+      endsAt: true
+    }
+  })
+
+  if (overlapEvent) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: `Trùng thời gian với sự kiện ID ${overlapEvent.eventId} (${overlapEvent.title}). Không thể tạo 2 sự kiện cùng hình thức trong cùng thời điểm.`
+    })
+  }
   
   const newEvent = await prisma.event.create({
     data: {
@@ -45,7 +67,7 @@ export default defineEventHandler(async (event) => {
       title: body.title.trim(),
       description: body.description?.trim() || null,
       imageUrl: body.imageUrl?.trim() || null,
-      format: 'REVERSE_AUCTION',
+      format,
       link: '/auctions',
       startsAt,
       endsAt

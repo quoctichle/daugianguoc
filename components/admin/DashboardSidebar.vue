@@ -7,13 +7,6 @@ const sections = [
       { label: 'Quản lý tin tức', to: '/admin/news' },
       { label: 'Quản lý sản phẩm', to: '/admin/featured-products' }
     ]
-  },
-  {
-    title: 'Sự kiện Đấu giá ngược',
-    links: [
-      { label: 'Cấu hình đấu giá', to: '/admin/config' },
-      { label: 'Thông tin chi tiết đấu giá', to: '/admin/auctions' }
-    ]
   }
 ]
 
