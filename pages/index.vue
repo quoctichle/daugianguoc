@@ -93,6 +93,7 @@ const scrollEvents = (direction: 'left' | 'right') => {
 
 const featuredTab = ref<'news' | 'products'>('news')
 const featuredScrollContainer = ref<HTMLElement | null>(null)
+let isFeaturedJumping = false
 
 const activeFeaturedItems = computed(() => {
   return featuredTab.value === 'news'
@@ -100,15 +101,55 @@ const activeFeaturedItems = computed(() => {
     : (featuredProductsData.value || [])
 })
 
+const infiniteFeaturedItems = computed(() => {
+  if (!activeFeaturedItems.value.length) return []
+
+  return [
+    ...activeFeaturedItems.value.map(item => ({ ...item, uniqueKey: `set1-${featuredTab.value}-${item.id}` })),
+    ...activeFeaturedItems.value.map(item => ({ ...item, uniqueKey: `set2-${featuredTab.value}-${item.id}` })),
+    ...activeFeaturedItems.value.map(item => ({ ...item, uniqueKey: `set3-${featuredTab.value}-${item.id}` }))
+  ]
+})
+
 const hasFeaturedSection = computed(() => {
   return (featuredNewsData.value?.length || 0) > 0 || (featuredProductsData.value?.length || 0) > 0
 })
 
+const resetFeaturedToMiddle = () => {
+  if (!featuredScrollContainer.value || !activeFeaturedItems.value.length) return
+  const container = featuredScrollContainer.value
+  const setWidth = (container.scrollWidth + 32) / 3
+  container.scrollLeft = setWidth
+}
+
+const handleFeaturedScroll = () => {
+  if (!featuredScrollContainer.value || isFeaturedJumping || !activeFeaturedItems.value.length) return
+  const container = featuredScrollContainer.value
+  const setWidth = (container.scrollWidth + 32) / 3
+
+  if (container.scrollLeft < setWidth * 0.5) {
+    isFeaturedJumping = true
+    container.style.scrollSnapType = 'none'
+    container.scrollLeft += setWidth
+    setTimeout(() => {
+      container.style.scrollSnapType = ''
+      isFeaturedJumping = false
+    }, 50)
+  }
+  else if (container.scrollLeft > setWidth * 1.5) {
+    isFeaturedJumping = true
+    container.style.scrollSnapType = 'none'
+    container.scrollLeft -= setWidth
+    setTimeout(() => {
+      container.style.scrollSnapType = ''
+      isFeaturedJumping = false
+    }, 50)
+  }
+}
+
 watch(featuredTab, async () => {
   await nextTick()
-  if (featuredScrollContainer.value) {
-    featuredScrollContainer.value.scrollLeft = 0
-  }
+  setTimeout(() => resetFeaturedToMiddle(), 50)
 })
 
 const scrollFeatured = (direction: 'left' | 'right') => {
@@ -123,6 +164,10 @@ const scrollFeatured = (direction: 'left' | 'right') => {
     container.scrollBy({ left: scrollAmount, behavior: 'smooth' })
   }
 }
+
+onMounted(() => {
+  setTimeout(() => resetFeaturedToMiddle(), 120)
+})
 </script>
 
 <template>
@@ -293,12 +338,13 @@ const scrollFeatured = (direction: 'left' | 'right') => {
 
           <div
             ref="featuredScrollContainer"
-            class="flex gap-8 overflow-x-auto pb-2"
+            class="flex gap-8 overflow-x-auto snap-x snap-mandatory pb-2"
             style="scrollbar-width: none; -ms-overflow-style: none;"
+            @scroll="handleFeaturedScroll"
           >
             <a
-              v-for="item in activeFeaturedItems"
-              :key="item.id"
+              v-for="item in infiniteFeaturedItems"
+              :key="item.uniqueKey"
               :href="item.link || '#'"
               target="_blank"
               rel="noopener noreferrer"
