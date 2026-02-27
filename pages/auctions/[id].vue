@@ -142,14 +142,14 @@ onUnmounted(() => {
 
 <template>
   <div class="space-y-6 pb-12">
-    <NuxtLink to="/auctions" class="group inline-flex items-center gap-2 text-sm font-medium text-slate-500 transition-colors hover:text-primary-600">
-      <div class="flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-sm ring-1 ring-slate-200 transition-transform group-hover:-translate-x-1 group-hover:bg-primary-50 group-hover:ring-primary-200">
+    <NuxtLink to="/auctions" class="group inline-flex items-center gap-2 text-sm font-medium text-slate-400 transition-colors hover:text-primary-400">
+      <div class="flex h-8 w-8 items-center justify-center rounded-full bg-slate-800 shadow-sm ring-1 ring-white/10 transition-transform group-hover:-translate-x-1 group-hover:bg-slate-700 group-hover:ring-primary-500/50">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
       </div>
       {{ t('auction.backToList') }}
     </NuxtLink>
 
-    <div v-if="productDetail && !isAccessGranted" class="animate-slide-up mx-auto max-w-xl overflow-hidden rounded-3xl bg-white shadow-2xl ring-1 ring-slate-200">
+    <div v-if="productDetail && !isAccessGranted" class="animate-slide-up mx-auto max-w-xl overflow-hidden rounded-3xl bg-slate-800 shadow-2xl ring-1 ring-white/10">
       <div class="bg-slate-900 px-8 py-10 text-center relative overflow-hidden">
         <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20"></div>
         <div class="relative z-10">
@@ -164,15 +164,15 @@ onUnmounted(() => {
       <div class="p-8">
         <div class="space-y-4">
           <div>
-            <label class="mb-2 block text-sm font-semibold text-slate-700">{{ t('user.idInputLabel') }}</label>
+            <label class="mb-2 block text-sm font-semibold text-slate-300">{{ t('user.idInputLabel') }}</label>
             <input
               v-model="typedAccessId"
               type="text"
-              class="block w-full rounded-xl border-slate-200 bg-slate-50 py-3 px-4 text-slate-900 uppercase placeholder-slate-400 shadow-sm focus:border-primary-500 focus:bg-white focus:ring-primary-500 sm:text-sm transition-colors"
+              class="block w-full rounded-xl border-slate-600 bg-slate-900/50 py-3 px-4 text-white uppercase placeholder-slate-500 shadow-sm focus:border-primary-500 focus:bg-slate-900 focus:ring-primary-500 sm:text-sm transition-colors"
               :placeholder="t('user.idInputPlaceholder')"
               @keyup.enter="verifyAccessId"
             >
-            <p v-if="accessError" class="mt-2 flex items-center gap-1 text-sm text-red-500">
+            <p v-if="accessError" class="mt-2 flex items-center gap-1 text-sm text-red-400">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
               {{ accessError }}
             </p>
@@ -192,10 +192,10 @@ onUnmounted(() => {
     <div v-else-if="productDetail" class="animate-slide-up grid gap-8 lg:grid-cols-12 lg:items-start">
       <!-- Left Column: Product Showcase -->
       <section class="lg:col-span-7 xl:col-span-8 space-y-6">
-        <div class="overflow-hidden rounded-3xl bg-white shadow-xl ring-1 ring-slate-200">
+        <div class="overflow-hidden rounded-3xl bg-slate-800/50 shadow-xl ring-1 ring-white/10 backdrop-blur-sm">
           <!-- Image Area -->
-          <div class="relative flex aspect-[4/3] w-full items-center justify-center bg-slate-100 p-8 sm:p-12">
-            <div class="absolute inset-0 bg-gradient-to-b from-transparent to-slate-900/10"></div>
+          <div class="relative flex aspect-[4/3] w-full items-center justify-center bg-slate-900 p-8 sm:p-12">
+            <div class="absolute inset-0 bg-gradient-to-b from-transparent to-slate-900/50"></div>
             <img
               v-if="productDetail.imageUrl"
               :src="productDetail.imageUrl"
@@ -227,8 +227,8 @@ onUnmounted(() => {
 
           <!-- Product Info -->
           <div class="p-8 sm:p-10">
-            <h1 class="text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">{{ productDetail.name }}</h1>
-            <div class="mt-6 prose prose-slate max-w-none text-slate-600">
+            <h1 class="text-3xl font-black tracking-tight text-white sm:text-4xl">{{ productDetail.name }}</h1>
+            <div class="mt-6 prose prose-invert max-w-none text-slate-300">
               <p class="whitespace-pre-line leading-relaxed">{{ productDetail.description }}</p>
             </div>
           </div>
@@ -238,13 +238,13 @@ onUnmounted(() => {
       <!-- Right Column: Bidding Console -->
       <div class="lg:col-span-5 xl:col-span-4 space-y-6 lg:sticky lg:top-24">
         <!-- Timer Card -->
-        <div class="overflow-hidden rounded-3xl bg-slate-900 shadow-2xl shadow-slate-900/20 ring-1 ring-slate-800">
+        <div class="overflow-hidden rounded-3xl bg-slate-900 shadow-2xl shadow-black/50 ring-1 ring-white/10">
           <div class="p-6 sm:p-8">
             <CountdownTimer :starts-at="productDetail.startsAt" :duration-minutes="productDetail.durationMinutes" :status="productDetail.status" />
           </div>
           
           <!-- Bidding Area -->
-          <div v-if="productDetail.status === 'active'" class="bg-white p-6 sm:p-8">
+          <div v-if="productDetail.status === 'active'" class="bg-slate-800/50 p-6 sm:p-8 border-t border-slate-700/50">
             <BidForm
               :max-bids-per-user="productDetail.maxBidsPerUser"
               :my-bid-count="productDetail.myBidCount"
@@ -256,7 +256,7 @@ onUnmounted(() => {
               enter-from-class="transform -translate-y-2 opacity-0"
               enter-to-class="transform translate-y-0 opacity-100"
             >
-              <div v-if="bidError" class="mt-4 flex items-start gap-3 rounded-xl bg-red-50 p-4 text-sm text-red-600 ring-1 ring-red-100">
+              <div v-if="bidError" class="mt-4 flex items-start gap-3 rounded-xl bg-red-500/10 p-4 text-sm text-red-400 ring-1 ring-red-500/20">
                 <svg xmlns="http://www.w3.org/2000/svg" class="mt-0.5 h-5 w-5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg>
                 <p class="font-medium">{{ bidError }}</p>
               </div>
@@ -267,7 +267,7 @@ onUnmounted(() => {
               enter-from-class="transform -translate-y-2 opacity-0"
               enter-to-class="transform translate-y-0 opacity-100"
             >
-              <div v-if="bidSuccess" class="mt-4 flex items-start gap-3 rounded-xl bg-green-50 p-4 text-sm text-green-700 ring-1 ring-green-200">
+              <div v-if="bidSuccess" class="mt-4 flex items-start gap-3 rounded-xl bg-green-500/10 p-4 text-sm text-green-400 ring-1 ring-green-500/20">
                 <svg xmlns="http://www.w3.org/2000/svg" class="mt-0.5 h-5 w-5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>
                 <p class="font-medium">{{ bidSuccess }}</p>
               </div>
@@ -276,7 +276,7 @@ onUnmounted(() => {
         </div>
 
         <!-- Winner List -->
-        <div class="rounded-3xl bg-white shadow-xl ring-1 ring-slate-200 overflow-hidden">
+        <div class="rounded-3xl bg-slate-800/50 shadow-xl ring-1 ring-white/10 overflow-hidden backdrop-blur-sm">
           <WinnerList :status="productDetail.status" :players="productDetail.players || []" />
         </div>
       </div>
@@ -294,7 +294,7 @@ onUnmounted(() => {
       <div v-if="showWinnerPopup" class="fixed inset-0 z-[100] flex items-center justify-center px-4 sm:px-0">
         <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm" @click="closeWinnerPopup"></div>
         
-        <div class="relative w-full max-w-2xl transform overflow-hidden rounded-[2rem] bg-white text-left align-middle shadow-2xl transition-all">
+        <div class="relative w-full max-w-2xl transform overflow-hidden rounded-[2rem] bg-slate-800 text-left align-middle shadow-2xl ring-1 ring-white/10 transition-all">
           <!-- Celebration Header -->
           <div class="bg-gradient-to-br from-primary-600 to-primary-900 px-8 py-12 text-center relative overflow-hidden">
             <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-30"></div>
@@ -324,35 +324,35 @@ onUnmounted(() => {
               <div
                 v-for="(winner, index) in winnerList"
                 :key="winner.id"
-                class="group relative flex items-center justify-between overflow-hidden rounded-2xl border border-slate-100 bg-slate-50 p-4 transition-all hover:border-primary-200 hover:bg-primary-50 hover:shadow-md"
+                class="group relative flex items-center justify-between overflow-hidden rounded-2xl border border-slate-700 bg-slate-900/50 p-4 transition-all hover:border-primary-500/50 hover:bg-primary-500/10 hover:shadow-md"
               >
                 <div v-if="index === 0" class="absolute -left-6 -top-6 h-16 w-16 rounded-full bg-accent-400/20 blur-xl"></div>
                 
                 <div class="relative z-10 flex items-center gap-4">
                   <div class="flex h-12 w-12 items-center justify-center rounded-xl font-black shadow-sm"
-                    :class="index === 0 ? 'bg-gradient-to-br from-accent-300 to-accent-500 text-white' : 'bg-white text-slate-500 ring-1 ring-slate-200'">
+                    :class="index === 0 ? 'bg-gradient-to-br from-accent-300 to-accent-500 text-white' : 'bg-slate-800 text-slate-400 ring-1 ring-slate-700'">
                     #{{ winner.rank }}
                   </div>
                   <div>
-                    <p class="text-xs font-bold uppercase tracking-wider text-slate-400">{{ t('auction.winnerLabel') }}</p>
-                    <p class="font-semibold text-slate-900">{{ maskEmail(winner.user.email) }}</p>
+                    <p class="text-xs font-bold uppercase tracking-wider text-slate-500">{{ t('auction.winnerLabel') }}</p>
+                    <p class="font-semibold text-white">{{ maskEmail(winner.user.email) }}</p>
                   </div>
                 </div>
                 <div class="relative z-10 text-right">
-                  <p class="text-xs font-bold uppercase tracking-wider text-slate-400">{{ t('auction.priceLabel') }}</p>
-                  <p class="text-xl font-black text-primary-600">{{ formatYen(winner.amount) }}</p>
+                  <p class="text-xs font-bold uppercase tracking-wider text-slate-500">{{ t('auction.priceLabel') }}</p>
+                  <p class="text-xl font-black text-primary-400">{{ formatYen(winner.amount) }}</p>
                 </div>
               </div>
             </div>
             
-            <div v-else class="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-slate-50 py-12 text-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="mb-4 h-12 w-12 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-              <p class="text-lg font-medium text-slate-600">{{ t('auction.popupNoWinner') }}</p>
+            <div v-else class="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-700 bg-slate-900/50 py-12 text-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="mb-4 h-12 w-12 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              <p class="text-lg font-medium text-slate-400">{{ t('auction.popupNoWinner') }}</p>
             </div>
 
             <button
               type="button"
-              class="mt-8 w-full rounded-xl bg-slate-900 px-4 py-4 text-sm font-bold text-white transition-colors hover:bg-slate-800"
+              class="mt-8 w-full rounded-xl bg-slate-700 px-4 py-4 text-sm font-bold text-white transition-colors hover:bg-slate-600"
               @click="closeWinnerPopup"
             >
               {{ t('common.close') }}

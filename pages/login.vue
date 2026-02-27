@@ -36,36 +36,36 @@ const submitLogin = async () => {
 <template>
   <div class="flex min-h-[calc(100vh-130px)] items-center justify-center">
     <div class="w-full max-w-md">
-      <div class="rounded-2xl border border-gray-200 bg-white p-8 shadow-lg">
+      <div class="rounded-2xl border border-slate-700/50 bg-slate-800/50 p-8 shadow-lg backdrop-blur-sm">
         <div class="text-center">
-          <h1 class="text-3xl font-bold text-primary-900">{{ t('auth.userLoginTitle') }}</h1>
-          <p class="mt-2 text-gray-500">
+          <h1 class="text-3xl font-bold text-white">{{ t('auth.userLoginTitle') }}</h1>
+          <p class="mt-2 text-slate-400">
             {{ t('auth.userLoginSubtitle') }}
           </p>
         </div>
 
         <form class="mt-8 space-y-4" @submit.prevent="submitLogin">
           <div>
-            <label for="email" class="mb-2 block text-sm font-medium text-gray-700">{{ t('auth.email') }}</label>
+            <label for="email" class="mb-2 block text-sm font-medium text-slate-300">{{ t('auth.email') }}</label>
             <input
               v-model="form.email"
               type="email"
               id="email"
               required
-              class="w-full rounded-lg border-gray-300 px-4 py-2.5 shadow-sm transition focus:border-primary-500 focus:ring-2 focus:ring-primary-200"
+              class="w-full rounded-lg border-slate-600 bg-slate-900/50 px-4 py-2.5 text-white placeholder-slate-500 shadow-sm transition focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20"
               placeholder="yourname@gmail.com"
             >
           </div>
 
           <button
             type="submit"
-            class="w-full rounded-lg bg-primary-800 px-5 py-3 text-base font-semibold text-white shadow-md transition hover:bg-primary-900 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+            class="w-full rounded-lg bg-primary-600 px-5 py-3 text-base font-semibold text-white shadow-md transition hover:bg-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
           >
             {{ t('auth.login') }}
           </button>
         </form>
 
-        <p v-if="errorMessage" class="mt-4 text-center text-sm text-red-600">{{ errorMessage }}</p>
+        <p v-if="errorMessage" class="mt-4 text-center text-sm text-red-400">{{ errorMessage }}</p>
       </div>
     </div>
   </div>

@@ -87,13 +87,13 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="rounded-xl border bg-slate-50 p-3 text-sm">
-    <div class="mb-2 font-medium text-slate-700">
+  <div class="rounded-xl border border-slate-700/50 bg-slate-800/50 p-3 text-sm">
+    <div class="mb-2 font-medium text-slate-300">
       {{ text }}
     </div>
-    <div class="h-2 w-full overflow-hidden rounded-full bg-slate-200">
+    <div class="h-2 w-full overflow-hidden rounded-full bg-slate-700">
       <div
-        class="progress-shimmer h-full rounded-full bg-primary-600 transition-all duration-1000 ease-linear"
+        class="progress-shimmer h-full rounded-full bg-primary-500 transition-all duration-1000 ease-linear"
         :style="{ width: `${progressPercent}%` }"
       />
     </div>

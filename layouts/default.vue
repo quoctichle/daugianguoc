@@ -24,7 +24,7 @@ const logoutFromMenu = async () => {
 </script>
 
 <template>
-  <div class="relative flex min-h-screen flex-col overflow-x-hidden bg-slate-50 text-slate-800 font-sans selection:bg-primary-500 selection:text-white">
+  <div class="relative flex min-h-screen flex-col overflow-x-hidden bg-[#050505] text-slate-200 font-sans selection:bg-primary-500 selection:text-white">
     <!-- Dynamic Background -->
     <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
       <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.03]"></div>
@@ -75,12 +75,12 @@ const logoutFromMenu = async () => {
                 leave-from-class="transform opacity-100 scale-100 translate-y-0"
                 leave-to-class="transform opacity-0 scale-95 translate-y-2"
               >
-                <div v-if="showUserMenu" class="absolute right-0 mt-3 w-56 origin-top-right rounded-xl border border-gray-100 bg-white p-2 shadow-xl ring-1 ring-black ring-opacity-5 focus:outline-none">
-                  <div class="mb-2 border-b border-gray-100 px-3 py-2">
-                    <p class="text-xs text-gray-500">{{ t('common.loggedInAs') }}</p>
-                    <p class="truncate text-sm font-medium text-gray-900">{{ user.email }}</p>
+                <div v-if="showUserMenu" class="absolute right-0 mt-3 w-56 origin-top-right rounded-xl border border-slate-700 bg-slate-800 p-2 shadow-xl ring-1 ring-white/10 focus:outline-none">
+                  <div class="mb-2 border-b border-slate-700 px-3 py-2">
+                    <p class="text-xs text-slate-400">{{ t('common.loggedInAs') }}</p>
+                    <p class="truncate text-sm font-medium text-white">{{ user.email }}</p>
                   </div>
-                  <NuxtLink v-if="user.role === 'ADMIN'" to="/admin" class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-primary-50 hover:text-primary-700">
+                  <NuxtLink v-if="user.role === 'ADMIN'" to="/admin" class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-300 transition-colors hover:bg-slate-700 hover:text-white">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -89,7 +89,7 @@ const logoutFromMenu = async () => {
                   </NuxtLink>
                   <button
                     type="button"
-                    class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
+                    class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-medium text-red-400 transition-colors hover:bg-red-500/10"
                     @click="logoutFromMenu"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
