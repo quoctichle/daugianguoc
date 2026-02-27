@@ -37,12 +37,12 @@ const logoutFromMenu = async () => {
     <header class="sticky top-0 z-50 w-full border-b border-white/20 bg-white/70 backdrop-blur-xl shadow-sm transition-all duration-300">
       <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
         <NuxtLink to="/" class="group flex items-center gap-3 transition-transform hover:scale-105">
-          <div class="relative flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary-600 to-primary-900 shadow-lg shadow-primary-900/20">
+          <div class="relative flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-[#66cc00] to-[#009933] shadow-lg shadow-[#66cc00]/20">
             <img :alt="t('common.brandName')" src="/uploads/logo.png" class="h-8 w-8 object-contain drop-shadow-md filter brightness-0 invert" >
           </div>
           <div class="flex flex-col">
-            <span class="bg-gradient-to-r from-primary-900 to-primary-600 bg-clip-text text-xl font-extrabold tracking-tight text-transparent">{{ t('common.brandName') }}</span>
-            <span class="text-[10px] font-medium uppercase tracking-widest text-primary-600">Your hope is our responsibility</span>
+            <span class="bg-gradient-to-r from-[#ffe600] to-[#66cc00] bg-clip-text text-xl font-extrabold tracking-tight text-transparent">{{ t('common.brandName') }}</span>
+            <span class="text-[10px] font-medium uppercase tracking-widest text-[#66cc00]">Your hope is our responsibility</span>
           </div>
         </NuxtLink>
         
@@ -127,8 +127,8 @@ const logoutFromMenu = async () => {
                 <img src="/uploads/logo.png" alt="Sunshine Telecom" class="h-full w-full object-contain" >
               </div>
               <div>
-                <h2 class="bg-gradient-to-r from-primary-400 to-accent-400 bg-clip-text text-2xl font-black tracking-tight text-transparent">SUNSHINE TELECOM</h2>
-                <p class="text-sm font-medium tracking-wider text-primary-400 uppercase">Your hope is our responsibility</p>
+                <h2 class="bg-gradient-to-r from-[#ffe600] to-[#66cc00] bg-clip-text text-2xl font-black tracking-tight text-transparent">SUNSHINE TELECOM</h2>
+                <p class="text-sm font-medium tracking-wider text-[#66cc00] uppercase">Your hope is our responsibility</p>
               </div>
             </div>
             <p class="text-sm leading-relaxed text-slate-400">
