@@ -207,13 +207,6 @@ onMounted(() => {
       
       <div class="relative z-10 mx-auto flex max-w-7xl min-h-[600px] flex-col justify-center px-4 py-20 sm:px-6 lg:px-8">
         <div class="max-w-2xl animate-slide-up">
-          <span class="mb-4 inline-flex items-center gap-2 rounded-full bg-primary-500/20 border border-primary-500/30 px-4 py-1.5 text-sm font-semibold text-primary-300 backdrop-blur-md">
-            <span class="relative flex h-2 w-2">
-              <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary-400 opacity-75"></span>
-              <span class="relative inline-flex h-2 w-2 rounded-full bg-primary-500"></span>
-            </span>
-            {{ t('user.activeCount', { count: activeCount }) }}
-          </span>
           <h1 class="mb-6 text-4xl font-black tracking-tight bg-gradient-to-r from-[#ffe600] to-[#66cc00] bg-clip-text text-transparent sm:text-5xl lg:text-6xl">
             {{ t('user.heroTitle') }} {{ t('user.heroHighlight') }}
           </h1>
