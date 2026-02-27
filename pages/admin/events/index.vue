@@ -179,7 +179,7 @@ const goToEventManagement = (id: string) => {
           <p class="mt-1 text-xs text-slate-500">Kết thúc: {{ new Date(event.endsAt).toLocaleString() }}</p>
 
           <div class="mt-4 flex gap-2">
-            <button @click.stop="openEdit(event)" class="flex-1 rounded-lg bg-slate-100 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-200">Sửa</button>
+            <button @click.stop="goToEventManagement(event.id)" class="flex-1 rounded-lg bg-slate-100 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-200">Sửa</button>
             <button @click.stop="deleteEvent(event.id)" class="flex-1 rounded-lg bg-red-50 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-100">Xóa</button>
           </div>
         </div>
