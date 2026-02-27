@@ -119,10 +119,22 @@ const scrollEvents = (direction: 'left' | 'right') => {
   if (!eventsScrollContainer.value) return
   const container = eventsScrollContainer.value
   const scrollAmount = container.clientWidth
+  
   if (direction === 'left') {
-    container.scrollBy({ left: -scrollAmount, behavior: 'smooth' })
+    if (container.scrollLeft <= 0) {
+      // If at the beginning, scroll to the end
+      container.scrollTo({ left: container.scrollWidth, behavior: 'smooth' })
+    } else {
+      container.scrollBy({ left: -scrollAmount, behavior: 'smooth' })
+    }
   } else {
-    container.scrollBy({ left: scrollAmount, behavior: 'smooth' })
+    // Check if we are at the end (allowing a small margin for rounding errors)
+    if (container.scrollLeft + container.clientWidth >= container.scrollWidth - 10) {
+      // If at the end, scroll back to the beginning
+      container.scrollTo({ left: 0, behavior: 'smooth' })
+    } else {
+      container.scrollBy({ left: scrollAmount, behavior: 'smooth' })
+    }
   }
 }
 </script>
