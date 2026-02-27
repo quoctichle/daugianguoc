@@ -137,7 +137,7 @@ const scrollEvents = (direction: 'left' | 'right') => {
 
       <div class="relative z-20 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="mb-12 text-center animate-slide-up" style="animation-delay: 50ms;">
-          <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight bg-gradient-to-r from-[#ffe600] to-[#66cc00] bg-clip-text text-transparent uppercase drop-shadow-[0_0_15px_rgba(102,204,0,0.3)] pb-2">
+          <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight bg-gradient-to-r from-[#ffe600] to-[#66cc00] bg-clip-text text-transparent uppercase drop-shadow-[0_0_15px_rgba(102,204,0,0.3)] py-2 leading-normal">
             {{ t('user.ongoingEvents') }}
           </h2>
         </div>
