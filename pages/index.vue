@@ -112,6 +112,19 @@ const confirmProductId = () => {
   navigateTo(`/auctions/${pendingProduct.value.id}?accessId=${value}`)
   closeIdPrompt()
 }
+
+const eventsScrollContainer = ref<HTMLElement | null>(null)
+
+const scrollEvents = (direction: 'left' | 'right') => {
+  if (!eventsScrollContainer.value) return
+  const container = eventsScrollContainer.value
+  const scrollAmount = container.clientWidth
+  if (direction === 'left') {
+    container.scrollBy({ left: -scrollAmount, behavior: 'smooth' })
+  } else {
+    container.scrollBy({ left: scrollAmount, behavior: 'smooth' })
+  }
+}
 </script>
 
 <template>
@@ -156,7 +169,7 @@ const confirmProductId = () => {
     </section>
 
     <!-- Events Section -->
-    <section v-if="eventsData && eventsData.length > 0" class="animate-slide-up rounded-3xl bg-[#050505] p-8 sm:p-12 shadow-2xl relative overflow-hidden" style="animation-delay: 50ms;">
+    <section v-if="eventsData && eventsData.length > 0" class="animate-slide-up rounded-3xl bg-[#050505] p-8 sm:p-12 shadow-2xl relative overflow-hidden group/section" style="animation-delay: 50ms;">
       <!-- Background Pattern -->
       <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(#00ff66 1px, transparent 1px); background-size: 30px 30px;"></div>
       <div class="absolute inset-0 bg-gradient-to-b from-transparent via-[#050505]/80 to-[#050505]"></div>
@@ -167,34 +180,60 @@ const confirmProductId = () => {
         </h2>
       </div>
       
-      <div class="relative z-10 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
-        <a
-          v-for="event in eventsData"
-          :key="event.id"
-          :href="event.link || '#'"
-          class="group flex flex-col overflow-hidden transition-all duration-300 hover:-translate-y-2"
+      <div class="relative z-10">
+        <!-- Navigation Buttons -->
+        <button 
+          @click="scrollEvents('left')"
+          class="absolute left-0 top-1/2 -translate-y-1/2 -ml-4 sm:-ml-6 z-20 flex h-12 w-12 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm border border-white/10 hover:bg-[#00ff66] hover:text-black transition-all opacity-0 group-hover/section:opacity-100 disabled:opacity-0"
         >
-          <div class="aspect-square w-full overflow-hidden rounded-xl border border-white/10 shadow-lg shadow-black/50">
-            <img
-              v-if="event.imageUrl"
-              :src="event.imageUrl"
-              :alt="event.title"
-              class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
-            >
-            <div v-else class="flex h-full w-full items-center justify-center bg-slate-800 text-slate-500">
-              Chưa có ảnh
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+          </svg>
+        </button>
+
+        <button 
+          @click="scrollEvents('right')"
+          class="absolute right-0 top-1/2 -translate-y-1/2 -mr-4 sm:-mr-6 z-20 flex h-12 w-12 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm border border-white/10 hover:bg-[#00ff66] hover:text-black transition-all opacity-0 group-hover/section:opacity-100 disabled:opacity-0"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+          </svg>
+        </button>
+
+        <!-- Scroll Container -->
+        <div 
+          ref="eventsScrollContainer"
+          class="flex gap-8 overflow-x-auto snap-x snap-mandatory pb-4"
+          style="scrollbar-width: none; -ms-overflow-style: none;"
+        >
+          <a
+            v-for="event in eventsData"
+            :key="event.id"
+            :href="event.link || '#'"
+            class="group flex flex-col overflow-hidden transition-all duration-300 hover:-translate-y-2 snap-start shrink-0 w-full sm:w-[calc(50%-1rem)] lg:w-[calc(25%-1.5rem)]"
+          >
+            <div class="aspect-square w-full overflow-hidden rounded-xl border border-white/10 shadow-lg shadow-black/50">
+              <img
+                v-if="event.imageUrl"
+                :src="event.imageUrl"
+                :alt="event.title"
+                class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+              >
+              <div v-else class="flex h-full w-full items-center justify-center bg-slate-800 text-slate-500">
+                Chưa có ảnh
+              </div>
             </div>
-          </div>
-          
-          <div class="mt-5 flex flex-col text-center px-2">
-            <h3 class="mb-3 text-base font-bold leading-snug text-white uppercase group-hover:text-[#00ff66] transition-colors line-clamp-2">
-              {{ event.title }}
-            </h3>
-            <p class="line-clamp-4 text-sm text-gray-400 leading-relaxed">
-              {{ event.description }}
-            </p>
-          </div>
-        </a>
+            
+            <div class="mt-5 flex flex-col text-center px-2">
+              <h3 class="mb-3 text-base font-bold leading-snug text-white uppercase group-hover:text-[#00ff66] transition-colors line-clamp-2">
+                {{ event.title }}
+              </h3>
+              <p class="line-clamp-4 text-sm text-gray-400 leading-relaxed">
+                {{ event.description }}
+              </p>
+            </div>
+          </a>
+        </div>
       </div>
     </section>
 
