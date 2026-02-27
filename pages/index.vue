@@ -29,18 +29,25 @@ const activeCount = computed(() => productsData.value?.filter(product => product
 const eventsScrollContainer = ref<HTMLElement | null>(null)
 let isJumping = false
 
+const eventItems = computed(() => eventsData.value || [])
+const shouldLoopEvents = computed(() => eventItems.value.length > 4)
+
 const infiniteEvents = computed(() => {
-  if (!eventsData.value || eventsData.value.length === 0) return []
+  if (!eventItems.value.length) return []
+  if (!shouldLoopEvents.value) {
+    return eventItems.value.map(e => ({ ...e, uniqueKey: `single-${e.id}` }))
+  }
+
   // Create 3 identical sets for infinite scrolling
   return [
-    ...eventsData.value.map(e => ({ ...e, uniqueKey: `set1-${e.id}` })),
-    ...eventsData.value.map(e => ({ ...e, uniqueKey: `set2-${e.id}` })),
-    ...eventsData.value.map(e => ({ ...e, uniqueKey: `set3-${e.id}` }))
+    ...eventItems.value.map(e => ({ ...e, uniqueKey: `set1-${e.id}` })),
+    ...eventItems.value.map(e => ({ ...e, uniqueKey: `set2-${e.id}` })),
+    ...eventItems.value.map(e => ({ ...e, uniqueKey: `set3-${e.id}` }))
   ]
 })
 
 const handleScroll = () => {
-  if (!eventsScrollContainer.value || isJumping) return
+  if (!eventsScrollContainer.value || isJumping || !shouldLoopEvents.value) return
   const container = eventsScrollContainer.value
   
   // gap-8 is 32px
@@ -71,7 +78,7 @@ const handleScroll = () => {
 onMounted(() => {
   // Initialize scroll position to the middle set
   setTimeout(() => {
-    if (eventsScrollContainer.value) {
+    if (eventsScrollContainer.value && shouldLoopEvents.value) {
       const container = eventsScrollContainer.value
       const setWidth = (container.scrollWidth + 32) / 3
       container.scrollLeft = setWidth
@@ -104,6 +111,10 @@ const activeFeaturedItems = computed(() => {
 const infiniteFeaturedItems = computed(() => {
   if (!activeFeaturedItems.value.length) return []
 
+  if (activeFeaturedItems.value.length <= 4) {
+    return activeFeaturedItems.value.map(item => ({ ...item, uniqueKey: `single-${featuredTab.value}-${item.id}` }))
+  }
+
   return [
     ...activeFeaturedItems.value.map(item => ({ ...item, uniqueKey: `set1-${featuredTab.value}-${item.id}` })),
     ...activeFeaturedItems.value.map(item => ({ ...item, uniqueKey: `set2-${featuredTab.value}-${item.id}` })),
@@ -115,15 +126,17 @@ const hasFeaturedSection = computed(() => {
   return (featuredNewsData.value?.length || 0) > 0 || (featuredProductsData.value?.length || 0) > 0
 })
 
+const shouldLoopFeatured = computed(() => activeFeaturedItems.value.length > 4)
+
 const resetFeaturedToMiddle = () => {
-  if (!featuredScrollContainer.value || !activeFeaturedItems.value.length) return
+  if (!featuredScrollContainer.value || !activeFeaturedItems.value.length || !shouldLoopFeatured.value) return
   const container = featuredScrollContainer.value
   const setWidth = (container.scrollWidth + 32) / 3
   container.scrollLeft = setWidth
 }
 
 const handleFeaturedScroll = () => {
-  if (!featuredScrollContainer.value || isFeaturedJumping || !activeFeaturedItems.value.length) return
+  if (!featuredScrollContainer.value || isFeaturedJumping || !activeFeaturedItems.value.length || !shouldLoopFeatured.value) return
   const container = featuredScrollContainer.value
   const setWidth = (container.scrollWidth + 32) / 3
 
@@ -149,7 +162,12 @@ const handleFeaturedScroll = () => {
 
 watch(featuredTab, async () => {
   await nextTick()
-  setTimeout(() => resetFeaturedToMiddle(), 50)
+  if (shouldLoopFeatured.value) {
+    setTimeout(() => resetFeaturedToMiddle(), 50)
+  }
+  else if (featuredScrollContainer.value) {
+    featuredScrollContainer.value.scrollLeft = 0
+  }
 })
 
 const scrollFeatured = (direction: 'left' | 'right') => {
@@ -166,7 +184,9 @@ const scrollFeatured = (direction: 'left' | 'right') => {
 }
 
 onMounted(() => {
-  setTimeout(() => resetFeaturedToMiddle(), 120)
+  if (shouldLoopFeatured.value) {
+    setTimeout(() => resetFeaturedToMiddle(), 120)
+  }
 })
 </script>
 
@@ -227,7 +247,8 @@ onMounted(() => {
         
         <div class="relative z-10 animate-slide-up" style="animation-delay: 100ms;">
           <!-- Navigation Buttons -->
-          <button 
+          <button
+            v-if="shouldLoopEvents"
             @click="scrollEvents('left')"
             class="absolute left-0 top-1/2 -translate-y-1/2 -ml-4 sm:-ml-6 z-20 flex h-12 w-12 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm border border-white/10 hover:bg-[#00ff66] hover:text-black transition-all opacity-0 group-hover/section:opacity-100 disabled:opacity-0"
           >
@@ -236,7 +257,8 @@ onMounted(() => {
             </svg>
           </button>
 
-          <button 
+          <button
+            v-if="shouldLoopEvents"
             @click="scrollEvents('right')"
             class="absolute right-0 top-1/2 -translate-y-1/2 -mr-4 sm:-mr-6 z-20 flex h-12 w-12 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm border border-white/10 hover:bg-[#00ff66] hover:text-black transition-all opacity-0 group-hover/section:opacity-100 disabled:opacity-0"
           >
@@ -317,6 +339,7 @@ onMounted(() => {
 
         <div class="relative">
           <button
+            v-if="shouldLoopFeatured"
             type="button"
             class="absolute left-0 top-1/2 z-20 -ml-4 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-black/50 text-white backdrop-blur-sm transition-all hover:bg-[#00ff66] hover:text-black"
             @click="scrollFeatured('left')"
@@ -327,6 +350,7 @@ onMounted(() => {
           </button>
 
           <button
+            v-if="shouldLoopFeatured"
             type="button"
             class="absolute right-0 top-1/2 z-20 -mr-4 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-black/50 text-white backdrop-blur-sm transition-all hover:bg-[#00ff66] hover:text-black"
             @click="scrollFeatured('right')"
