@@ -92,14 +92,14 @@ const scrollEvents = (direction: 'left' | 'right') => {
         <img
           src="/uploads/Banner.jpg"
           alt="Event Banner"
-          class="h-full w-full object-cover opacity-60 transition-transform duration-1000 hover:scale-105"
+          class="h-full w-full object-cover object-center opacity-60 transition-transform duration-1000 hover:scale-105"
         >
         <!-- Gradient blending into the events section background (#050505) -->
         <div class="absolute inset-0 bg-gradient-to-t from-[#050505] via-slate-900/40 to-transparent"></div>
         <div class="absolute inset-0 bg-gradient-to-r from-slate-900/80 via-transparent to-transparent"></div>
       </div>
       
-      <div class="relative z-10 mx-auto flex max-w-7xl min-h-[500px] flex-col justify-center px-4 py-20 sm:px-6 lg:px-8">
+      <div class="relative z-10 mx-auto flex max-w-7xl min-h-[600px] flex-col justify-center px-4 py-20 sm:px-6 lg:px-8">
         <div class="max-w-2xl animate-slide-up">
           <span class="mb-4 inline-flex items-center gap-2 rounded-full bg-primary-500/20 border border-primary-500/30 px-4 py-1.5 text-sm font-semibold text-primary-300 backdrop-blur-md">
             <span class="relative flex h-2 w-2">
