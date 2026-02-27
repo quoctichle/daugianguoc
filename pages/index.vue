@@ -114,6 +114,57 @@ const confirmProductId = () => {
 }
 
 const eventsScrollContainer = ref<HTMLElement | null>(null)
+let isJumping = false
+
+const infiniteEvents = computed(() => {
+  if (!eventsData.value || eventsData.value.length === 0) return []
+  // Create 3 identical sets for infinite scrolling
+  return [
+    ...eventsData.value.map(e => ({ ...e, uniqueKey: `set1-${e.id}` })),
+    ...eventsData.value.map(e => ({ ...e, uniqueKey: `set2-${e.id}` })),
+    ...eventsData.value.map(e => ({ ...e, uniqueKey: `set3-${e.id}` }))
+  ]
+})
+
+const handleScroll = () => {
+  if (!eventsScrollContainer.value || isJumping) return
+  const container = eventsScrollContainer.value
+  
+  // gap-8 is 32px
+  const setWidth = (container.scrollWidth + 32) / 3
+
+  // If we scroll into the first set, jump to the middle set
+  if (container.scrollLeft < setWidth * 0.5) {
+    isJumping = true
+    container.style.scrollSnapType = 'none'
+    container.scrollLeft += setWidth
+    setTimeout(() => {
+      container.style.scrollSnapType = ''
+      isJumping = false
+    }, 50)
+  } 
+  // If we scroll into the third set, jump back to the middle set
+  else if (container.scrollLeft > setWidth * 1.5) {
+    isJumping = true
+    container.style.scrollSnapType = 'none'
+    container.scrollLeft -= setWidth
+    setTimeout(() => {
+      container.style.scrollSnapType = ''
+      isJumping = false
+    }, 50)
+  }
+}
+
+onMounted(() => {
+  // Initialize scroll position to the middle set
+  setTimeout(() => {
+    if (eventsScrollContainer.value) {
+      const container = eventsScrollContainer.value
+      const setWidth = (container.scrollWidth + 32) / 3
+      container.scrollLeft = setWidth
+    }
+  }, 100)
+})
 
 const scrollEvents = (direction: 'left' | 'right') => {
   if (!eventsScrollContainer.value) return
@@ -121,20 +172,9 @@ const scrollEvents = (direction: 'left' | 'right') => {
   const scrollAmount = container.clientWidth
   
   if (direction === 'left') {
-    if (container.scrollLeft <= 0) {
-      // If at the beginning, scroll to the end
-      container.scrollTo({ left: container.scrollWidth, behavior: 'smooth' })
-    } else {
-      container.scrollBy({ left: -scrollAmount, behavior: 'smooth' })
-    }
+    container.scrollBy({ left: -scrollAmount, behavior: 'smooth' })
   } else {
-    // Check if we are at the end (allowing a small margin for rounding errors)
-    if (container.scrollLeft + container.clientWidth >= container.scrollWidth - 10) {
-      // If at the end, scroll back to the beginning
-      container.scrollTo({ left: 0, behavior: 'smooth' })
-    } else {
-      container.scrollBy({ left: scrollAmount, behavior: 'smooth' })
-    }
+    container.scrollBy({ left: scrollAmount, behavior: 'smooth' })
   }
 }
 </script>
@@ -217,10 +257,11 @@ const scrollEvents = (direction: 'left' | 'right') => {
           ref="eventsScrollContainer"
           class="flex gap-8 overflow-x-auto snap-x snap-mandatory pb-4"
           style="scrollbar-width: none; -ms-overflow-style: none;"
+          @scroll="handleScroll"
         >
           <a
-            v-for="event in eventsData"
-            :key="event.id"
+            v-for="event in infiniteEvents"
+            :key="event.uniqueKey"
             :href="event.link || '#'"
             class="group flex flex-col overflow-hidden transition-all duration-300 hover:-translate-y-2 snap-start shrink-0 w-full sm:w-[calc(50%-1rem)] lg:w-[calc(25%-1.5rem)]"
           >
