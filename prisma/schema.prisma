@@ -95,7 +95,7 @@ enum ProductStatus {
 
 model Event {
   id          String   @id @default(cuid())
-  eventId     Int      @unique @default(autoincrement())
+  eventId     Int      @default(autoincrement())
   code        String   @unique
   format      EventFormat @default(REVERSE_AUCTION)
   title       String
