@@ -36,7 +36,7 @@ const statusLabel = computed(() => {
     <div v-if="active" class="absolute -inset-px z-0 rounded-2xl bg-gradient-to-b from-primary-400/20 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"></div>
 
     <!-- Image Container -->
-    <div class="relative z-10 aspect-[4/3] w-full overflow-hidden bg-slate-100">
+    <div class="relative z-10 h-52 w-full overflow-hidden bg-slate-100">
       <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent opacity-60 transition-opacity duration-500 group-hover:opacity-80 z-10" />
       
       <img
