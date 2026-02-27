@@ -201,8 +201,8 @@ onMounted(() => {
           class="h-full w-full object-cover object-center opacity-60 transition-transform duration-1000 hover:scale-105"
         >
         <!-- Gradient blending into the events section background (#031729) -->
-        <div class="absolute inset-0 bg-gradient-to-t from-[#031729] via-slate-900/40 to-transparent"></div>
-        <div class="absolute inset-0 bg-gradient-to-r from-slate-900/80 via-transparent to-transparent"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-[#031729] via-[#031729]/35 to-transparent"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-[#031729]/70 via-transparent to-transparent"></div>
       </div>
       
       <div class="relative z-10 mx-auto flex max-w-7xl min-h-[600px] flex-col justify-center px-4 py-20 sm:px-6 lg:px-8">
@@ -235,7 +235,7 @@ onMounted(() => {
     <!-- Events Section -->
     <section v-if="eventsData && eventsData.length > 0" class="relative overflow-hidden bg-[#031729] pb-16 pt-10 group/section">
       <!-- Background Pattern -->
-      <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(#00ff66 1px, transparent 1px); background-size: 30px 30px;"></div>
+      <div class="absolute inset-0 bg-gradient-to-br from-primary-500/5 via-transparent to-emerald-400/5"></div>
       <div class="absolute inset-0 bg-gradient-to-b from-transparent via-[#031729]/80 to-[#031729]"></div>
       
       <div class="relative z-20 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -250,7 +250,7 @@ onMounted(() => {
           <button
             v-if="shouldLoopEvents"
             @click="scrollEvents('left')"
-            class="absolute left-0 top-1/2 -translate-y-1/2 -ml-4 sm:-ml-6 z-20 flex h-12 w-12 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm border border-white/10 hover:bg-[#00ff66] hover:text-black transition-all opacity-0 group-hover/section:opacity-100 disabled:opacity-0"
+            class="absolute left-0 top-1/2 -translate-y-1/2 -ml-4 sm:-ml-6 z-20 flex h-12 w-12 items-center justify-center rounded-full bg-[#031729]/70 text-white backdrop-blur-sm border border-white/10 hover:bg-[#00ff66] hover:text-black transition-all opacity-0 group-hover/section:opacity-100 disabled:opacity-0"
           >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
               <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
@@ -260,7 +260,7 @@ onMounted(() => {
           <button
             v-if="shouldLoopEvents"
             @click="scrollEvents('right')"
-            class="absolute right-0 top-1/2 -translate-y-1/2 -mr-4 sm:-mr-6 z-20 flex h-12 w-12 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm border border-white/10 hover:bg-[#00ff66] hover:text-black transition-all opacity-0 group-hover/section:opacity-100 disabled:opacity-0"
+            class="absolute right-0 top-1/2 -translate-y-1/2 -mr-4 sm:-mr-6 z-20 flex h-12 w-12 items-center justify-center rounded-full bg-[#031729]/70 text-white backdrop-blur-sm border border-white/10 hover:bg-[#00ff66] hover:text-black transition-all opacity-0 group-hover/section:opacity-100 disabled:opacity-0"
           >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
               <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
@@ -307,7 +307,7 @@ onMounted(() => {
     </section>
 
     <section v-if="hasFeaturedSection" class="relative overflow-hidden bg-[#031729] pb-24 pt-8">
-      <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(#00ff66 1px, transparent 1px); background-size: 30px 30px;"></div>
+      <div class="absolute inset-0 bg-gradient-to-br from-primary-500/5 via-transparent to-emerald-400/5"></div>
       <div class="absolute inset-0 bg-gradient-to-b from-transparent via-[#031729]/80 to-[#031729]"></div>
       <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent to-[#02111a] z-10 pointer-events-none"></div>
 
@@ -341,7 +341,7 @@ onMounted(() => {
           <button
             v-if="shouldLoopFeatured"
             type="button"
-            class="absolute left-0 top-1/2 z-20 -ml-4 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-black/50 text-white backdrop-blur-sm transition-all hover:bg-[#00ff66] hover:text-black"
+            class="absolute left-0 top-1/2 z-20 -ml-4 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-[#031729]/70 text-white backdrop-blur-sm transition-all hover:bg-[#00ff66] hover:text-black"
             @click="scrollFeatured('left')"
           >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-6 w-6">
@@ -352,7 +352,7 @@ onMounted(() => {
           <button
             v-if="shouldLoopFeatured"
             type="button"
-            class="absolute right-0 top-1/2 z-20 -mr-4 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-black/50 text-white backdrop-blur-sm transition-all hover:bg-[#00ff66] hover:text-black"
+            class="absolute right-0 top-1/2 z-20 -mr-4 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-[#031729]/70 text-white backdrop-blur-sm transition-all hover:bg-[#00ff66] hover:text-black"
             @click="scrollFeatured('right')"
           >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-6 w-6">
