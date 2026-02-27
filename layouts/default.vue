@@ -106,7 +106,7 @@ const logoutFromMenu = async () => {
     </header>
 
     <!-- Main Content -->
-    <main class="flex-1 w-full">
+    <main class="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6 lg:px-8">
       <slot />
     </main>
 
