@@ -3,22 +3,18 @@ import { prisma } from '~/server/utils/prisma'
 export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, 'id')
   const body = await readBody(event)
+  const newsModel = (prisma as any).news
 
-  const existing = await prisma.event.findUnique({
-    where: { id },
-    select: { code: true }
-  })
+  const existing = await newsModel.findUnique({ where: { id } })
 
   if (!existing) {
     throw createError({ statusCode: 404, statusMessage: 'News not found' })
   }
 
-  const updated = await prisma.event.update({
+  const updated = await newsModel.update({
     where: { id },
     data: {
-      code: body.code || existing.code,
       title: body.title,
-      description: body.description,
       imageUrl: body.imageUrl,
       isActive: body.isActive,
       link: body.link
