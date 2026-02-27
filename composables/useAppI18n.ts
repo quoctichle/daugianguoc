@@ -120,6 +120,9 @@ const messages: Record<Locale, Dictionary> = {
     },
     productForm: {
       title: 'Thêm sản phẩm sự kiện',
+      event: 'Sự kiện',
+      selectEvent: 'Chọn sự kiện',
+      noEventHint: 'Bạn cần tạo sự kiện trước khi thêm sản phẩm.',
       image: 'Ảnh sản phẩm',
       name: 'Tên sản phẩm',
       usedProduct: 'Sản phẩm cho khách đã sử dụng',
@@ -280,6 +283,9 @@ const messages: Record<Locale, Dictionary> = {
     },
     productForm: {
       title: 'Add Event Product',
+      event: 'Event',
+      selectEvent: 'Select event',
+      noEventHint: 'Create an event before adding products.',
       image: 'Product Image',
       name: 'Product Name',
       usedProduct: 'Used-product for existing customers',

@@ -5,7 +5,12 @@ const emit = defineEmits<{
 
 const { t } = useAppI18n()
 
+const { data: eventsData } = await useFetch<any[]>('/api/admin/events', {
+  headers: process.server ? useRequestHeaders(['cookie']) : undefined
+})
+
 const form = reactive({
+  eventId: '',
   name: '',
   isUsedProduct: false,
   startsAt: '',
@@ -19,6 +24,12 @@ const imageFile = ref<File | null>(null)
 const message = ref('')
 const errorMessage = ref('')
 const submitting = ref(false)
+
+watch(eventsData, (value) => {
+  if (!form.eventId && value?.length) {
+    form.eventId = value[0].id
+  }
+}, { immediate: true })
 
 const onFileChange = (event: Event) => {
   const target = event.target as HTMLInputElement
@@ -51,6 +62,7 @@ const createProduct = async () => {
       }
     })
 
+  form.eventId = eventsData.value?.[0]?.id || ''
     form.name = ''
     form.isUsedProduct = false
     form.startsAt = ''
@@ -76,6 +88,16 @@ const createProduct = async () => {
     <h2 class="mb-4 text-lg font-semibold">{{ t('productForm.title') }}</h2>
 
     <form class="grid grid-cols-1 gap-3 md:grid-cols-2" @submit.prevent="createProduct">
+      <label class="text-sm md:col-span-2">
+        <span class="mb-1 block">{{ t('productForm.event') }}</span>
+        <select v-model="form.eventId" required class="w-full rounded-lg border px-3 py-2">
+          <option disabled value="">{{ t('productForm.selectEvent') }}</option>
+          <option v-for="event in eventsData || []" :key="event.id" :value="event.id">
+            ID {{ event.eventId }} - {{ event.title }}
+          </option>
+        </select>
+      </label>
+
       <label class="text-sm">
         <span class="mb-1 block">{{ t('productForm.image') }}</span>
         <input type="file" accept="image/*" class="w-full rounded-lg border px-3 py-2" @change="onFileChange">
@@ -127,6 +149,8 @@ const createProduct = async () => {
         </button>
       </div>
     </form>
+
+    <p v-if="!(eventsData && eventsData.length)" class="mt-3 text-sm text-amber-600">{{ t('productForm.noEventHint') }}</p>
 
     <p v-if="message" class="mt-3 text-sm text-emerald-600">{{ message }}</p>
     <p v-if="errorMessage" class="mt-3 text-sm text-red-600">{{ errorMessage }}</p>

@@ -3,6 +3,7 @@ const props = defineProps<{
   products: Array<{
     id: string
     productCode?: number | null
+    event?: { id: string, eventId?: number | null, title?: string | null } | null
     name: string
     isUsedProduct?: boolean
     status: string
@@ -30,6 +31,7 @@ const { t } = useAppI18n()
     <table class="min-w-full text-sm">
       <thead class="bg-slate-50 text-left">
         <tr>
+          <th class="px-3 py-2">Sự kiện</th>
           <th class="px-3 py-2">{{ t('productTable.name') }}</th>
           <th class="px-3 py-2">{{ t('productTable.type') }}</th>
           <th class="px-3 py-2">{{ t('productTable.start') }}</th>
@@ -41,6 +43,7 @@ const { t } = useAppI18n()
       </thead>
       <tbody>
         <tr v-for="item in sortedProducts" :key="item.id" class="border-t">
+          <td class="px-3 py-2 text-xs text-slate-600">{{ item.event ? `ID ${item.event.eventId || '-'} - ${item.event.title || 'N/A'}` : 'Chưa gán' }}</td>
           <td class="px-3 py-2">#{{ item.productCode || '-' }} - {{ item.name }}</td>
           <td class="px-3 py-2">
             <span class="rounded px-2 py-1 text-xs" :class="item.isUsedProduct ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'">

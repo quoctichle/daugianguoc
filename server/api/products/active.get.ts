@@ -6,8 +6,24 @@ export default defineEventHandler(async (event) => {
   await requireUser(event)
   await syncAllProductsStatus()
 
+  const now = new Date()
+  const ongoingEvent = await prisma.event.findFirst({
+    where: {
+      format: 'REVERSE_AUCTION',
+      startsAt: { lte: now },
+      endsAt: { gte: now }
+    },
+    orderBy: { startsAt: 'desc' },
+    select: { id: true }
+  })
+
+  if (!ongoingEvent) {
+    return []
+  }
+
   const products = await prisma.product.findMany({
     where: {
+      eventId: ongoingEvent.id,
       status: {
         in: ['active', 'pending', 'completed']
       }

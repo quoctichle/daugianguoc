@@ -4,6 +4,7 @@ import { requireAdmin } from '~~/server/utils/session'
 export default defineEventHandler(async (event) => {
   await requireAdmin(event)
   const body = await readBody<{
+    eventId?: string
     name?: string
     imageUrl?: string
     isUsedProduct?: boolean
@@ -14,7 +15,7 @@ export default defineEventHandler(async (event) => {
     description?: string
   }>(event)
 
-  if (!body.name || !body.startsAt || !body.durationMinutes || !body.winnerCount || !body.maxBidsPerUser || !body.description) {
+  if (!body.eventId || !body.name || !body.startsAt || !body.durationMinutes || !body.winnerCount || !body.maxBidsPerUser || !body.description) {
     throw createError({ statusCode: 400, statusMessage: 'Missing required fields' })
   }
 
@@ -25,6 +26,15 @@ export default defineEventHandler(async (event) => {
 
   if (body.durationMinutes <= 0 || body.winnerCount <= 0 || body.maxBidsPerUser <= 0) {
     throw createError({ statusCode: 400, statusMessage: 'Numeric values must be greater than zero' })
+  }
+
+  const eventEntity = await prisma.event.findUnique({
+    where: { id: body.eventId },
+    select: { id: true }
+  })
+
+  if (!eventEntity) {
+    throw createError({ statusCode: 400, statusMessage: 'Sự kiện không tồn tại' })
   }
 
   const product = await prisma.$transaction(async (tx) => {
@@ -39,6 +49,7 @@ export default defineEventHandler(async (event) => {
     return tx.product.create({
       data: {
         productCode: nextProductCode,
+        eventId: eventEntity.id,
         name: body.name.trim(),
         imageUrl: body.imageUrl?.trim() || null,
         isUsedProduct: Boolean(body.isUsedProduct),

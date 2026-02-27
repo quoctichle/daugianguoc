@@ -10,24 +10,70 @@ const { data: events, refresh } = await useFetch<any[]>('/api/admin/events', {
 
 const isEditing = ref(false)
 const currentEvent = ref<any>({
+  eventId: null,
   title: '',
   description: '',
+  format: 'REVERSE_AUCTION',
   imageUrl: '',
-  isActive: false,
-  link: ''
+  link: '/auctions',
+  startsAt: '',
+  endsAt: ''
 })
+
+const toDateTimeLocal = (value?: string | null) => {
+  if (!value) return ''
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return ''
+
+  const pad = (n: number) => `${n}`.padStart(2, '0')
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`
+}
+
+const nextEventId = computed(() => {
+  const list = events.value || []
+  if (!list.length) {
+    return 1
+  }
+
+  return Math.max(...list.map(item => Number(item.eventId) || 0)) + 1
+})
+
+const getEventStatus = (item: any) => {
+  const now = Date.now()
+  const start = new Date(item.startsAt).getTime()
+  const end = new Date(item.endsAt).getTime()
+
+  if (!Number.isNaN(start) && !Number.isNaN(end) && now >= start && now <= end) {
+    return 'ongoing'
+  }
+
+  if (!Number.isNaN(start) && now < start) {
+    return 'upcoming'
+  }
+
+  return 'ended'
+}
 
 const openEdit = (event?: any) => {
   if (event) {
-    currentEvent.value = { ...event }
+    currentEvent.value = {
+      ...event,
+      format: event.format || 'REVERSE_AUCTION',
+      link: event.link || '/auctions',
+      startsAt: toDateTimeLocal(event.startsAt),
+      endsAt: toDateTimeLocal(event.endsAt)
+    }
   }
   else {
     currentEvent.value = {
+      eventId: nextEventId.value,
       title: '',
       description: '',
+      format: 'REVERSE_AUCTION',
       imageUrl: '',
-      isActive: false,
-      link: ''
+      link: '/auctions',
+      startsAt: '',
+      endsAt: ''
     }
   }
   isEditing.value = true
@@ -114,13 +160,17 @@ const handleImageUpload = async (e: Event) => {
 
         <div class="p-4">
           <div class="mb-2 flex items-center justify-between">
-            <span class="rounded-full px-2 py-1 text-xs font-medium" :class="event.isActive ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-700'">
-              {{ event.isActive ? 'Đang diễn ra' : 'Đã ẩn' }}
+            <span class="rounded-full px-2 py-1 text-xs font-medium" :class="getEventStatus(event) === 'ongoing' ? 'bg-green-100 text-green-700' : getEventStatus(event) === 'upcoming' ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-700'">
+              {{ getEventStatus(event) === 'ongoing' ? 'Đang diễn ra' : getEventStatus(event) === 'upcoming' ? 'Sắp diễn ra' : 'Đã kết thúc' }}
             </span>
+            <span class="text-xs font-semibold text-slate-500">ID: {{ event.eventId }}</span>
           </div>
 
-          <a :href="event.link || '#'" target="_blank" rel="noopener noreferrer" class="line-clamp-2 font-bold text-slate-900 hover:text-primary-700">{{ event.title }}</a>
+          <a :href="event.link || '/auctions'" target="_blank" rel="noopener noreferrer" class="line-clamp-2 font-bold text-slate-900 hover:text-primary-700">{{ event.title }}</a>
           <p class="mt-1 line-clamp-2 text-sm text-slate-500">{{ event.description || 'Chưa có mô tả' }}</p>
+          <p class="mt-2 text-xs text-slate-500">Hình thức: {{ event.format === 'REVERSE_AUCTION' ? 'Đấu giá ngược' : event.format }}</p>
+          <p class="mt-1 text-xs text-slate-500">Bắt đầu: {{ new Date(event.startsAt).toLocaleString() }}</p>
+          <p class="mt-1 text-xs text-slate-500">Kết thúc: {{ new Date(event.endsAt).toLocaleString() }}</p>
 
           <div class="mt-4 flex gap-2">
             <button @click="openEdit(event)" class="flex-1 rounded-lg bg-slate-100 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-200">Sửa</button>
@@ -136,6 +186,11 @@ const handleImageUpload = async (e: Event) => {
 
         <div class="space-y-4">
           <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700">ID</label>
+            <input :value="currentEvent.eventId || nextEventId" type="text" readonly class="w-full rounded-lg border border-slate-300 bg-slate-100 px-3 py-2 text-slate-600" >
+          </div>
+
+          <div>
             <label class="mb-1 block text-sm font-medium text-slate-700">Tiêu đề</label>
             <input v-model="currentEvent.title" type="text" class="w-full rounded-lg border border-slate-300 px-3 py-2" >
           </div>
@@ -146,8 +201,25 @@ const handleImageUpload = async (e: Event) => {
           </div>
 
           <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700">Hình thức</label>
+            <select v-model="currentEvent.format" class="w-full rounded-lg border border-slate-300 px-3 py-2">
+              <option value="REVERSE_AUCTION">Đấu giá ngược</option>
+            </select>
+          </div>
+
+          <div>
             <label class="mb-1 block text-sm font-medium text-slate-700">Link sự kiện</label>
-            <input v-model="currentEvent.link" type="text" class="w-full rounded-lg border border-slate-300 px-3 py-2" placeholder="https://..." >
+            <input v-model="currentEvent.link" type="text" readonly class="w-full rounded-lg border border-slate-300 bg-slate-100 px-3 py-2 text-slate-600" >
+          </div>
+
+          <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700">Thời gian bắt đầu</label>
+            <input v-model="currentEvent.startsAt" type="datetime-local" class="w-full rounded-lg border border-slate-300 px-3 py-2" >
+          </div>
+
+          <div>
+            <label class="mb-1 block text-sm font-medium text-slate-700">Thời gian kết thúc</label>
+            <input v-model="currentEvent.endsAt" type="datetime-local" class="w-full rounded-lg border border-slate-300 px-3 py-2" >
           </div>
 
           <div>
@@ -156,10 +228,7 @@ const handleImageUpload = async (e: Event) => {
             <img v-if="currentEvent.imageUrl" :src="currentEvent.imageUrl" class="mt-2 h-32 w-full rounded-lg object-cover" >
           </div>
 
-          <div class="flex items-center gap-2">
-            <input id="isEventActive" v-model="currentEvent.isActive" type="checkbox" class="h-4 w-4 rounded border-slate-300 text-primary-600" >
-            <label for="isEventActive" class="text-sm font-medium text-slate-700">Hiển thị ở mục sự kiện đang diễn ra</label>
-          </div>
+          <p class="text-xs text-slate-500">Sự kiện sẽ tự hiển thị ở trang user khi thời gian hiện tại nằm trong khoảng bắt đầu/kết thúc.</p>
         </div>
 
         <div class="mt-6 flex justify-end gap-3">

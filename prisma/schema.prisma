@@ -31,6 +31,7 @@ model Rule {
 model Product {
   id              String        @id @default(cuid())
   productCode     Int?          @unique
+  eventId         String?
   name            String
   imageUrl        String?
   isUsedProduct   Boolean       @default(false)
@@ -42,8 +43,11 @@ model Product {
   status          ProductStatus @default(pending)
   bids            Bid[]
   winners         Winner[]
+  event           Event?        @relation(fields: [eventId], references: [id], onDelete: SetNull)
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
+
+  @@index([eventId])
 }
 
 model Bid {
@@ -91,14 +95,23 @@ enum ProductStatus {
 
 model Event {
   id          String   @id @default(cuid())
+  eventId     Int      @unique @default(autoincrement())
   code        String   @unique
+  format      EventFormat @default(REVERSE_AUCTION)
   title       String
   description String?
   imageUrl    String?
   isActive    Boolean  @default(false)
-  link        String?
+  link        String   @default("/auctions")
+  startsAt    DateTime
+  endsAt      DateTime
+  products    Product[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+enum EventFormat {
+  REVERSE_AUCTION
 }
 
 model News {
