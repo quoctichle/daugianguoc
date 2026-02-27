@@ -1,7 +1,18 @@
 <script setup lang="ts">
-const links = [
-  { label: 'Cấu hình đấu giá', to: '/admin/config' },
-  { label: 'Thông tin chi tiết đấu giá', to: '/admin/auctions' }
+const sections = [
+  {
+    title: 'Quản lý chung',
+    links: [
+      { label: 'Danh sách sự kiện', to: '/admin/events' }
+    ]
+  },
+  {
+    title: 'Sự kiện Đấu giá ngược',
+    links: [
+      { label: 'Cấu hình đấu giá', to: '/admin/config' },
+      { label: 'Thông tin chi tiết đấu giá', to: '/admin/auctions' }
+    ]
+  }
 ]
 
 const route = useRoute()
@@ -9,17 +20,22 @@ const route = useRoute()
 
 <template>
   <div>
-    <h2 class="mb-4 text-lg font-semibold">Admin Dashboard</h2>
-    <ul class="space-y-2">
-      <li v-for="item in links" :key="item.to">
-        <NuxtLink
-          :to="item.to"
-          class="block rounded-lg px-3 py-2 text-sm"
-          :class="route.path.startsWith(item.to) ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-800'"
-        >
-          {{ item.label }}
-        </NuxtLink>
-      </li>
-    </ul>
+    <h2 class="mb-6 text-xl font-bold text-slate-900">Admin Dashboard</h2>
+    <div class="space-y-6">
+      <div v-for="section in sections" :key="section.title">
+        <h3 class="mb-2 px-3 text-xs font-bold uppercase tracking-wider text-slate-400">{{ section.title }}</h3>
+        <ul class="space-y-1">
+          <li v-for="item in section.links" :key="item.to">
+            <NuxtLink
+              :to="item.to"
+              class="block rounded-lg px-3 py-2 text-sm font-medium transition-colors"
+              :class="route.path.startsWith(item.to) ? 'bg-primary-50 text-primary-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'"
+            >
+              {{ item.label }}
+            </NuxtLink>
+          </li>
+        </ul>
+      </div>
+    </div>
   </div>
 </template>

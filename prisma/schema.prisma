@@ -3,9 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
+  provider  = "sqlite"
   url       = env("DATABASE_URL")
-  directUrl = env("DATABASE_URL_UNPOOLED")
 }
 
 model User {
@@ -87,4 +86,16 @@ enum ProductStatus {
   pending
   active
   completed
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  title       String
+  description String?
+  imageUrl    String?
+  isActive    Boolean  @default(false)
+  link        String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

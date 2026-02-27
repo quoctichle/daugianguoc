@@ -12,6 +12,10 @@ const { data: productsData } = await useFetch<any[]>('/api/products/active', {
   headers: process.server ? useRequestHeaders(['cookie']) : undefined
 })
 
+const { data: eventsData } = await useFetch<any[]>('/api/events', {
+  headers: process.server ? useRequestHeaders(['cookie']) : undefined
+})
+
 const sortedProducts = computed(() => {
   const statusPriority: Record<string, number> = {
     active: 0,
@@ -148,6 +152,44 @@ const confirmProductId = () => {
             </button>
           </div>
         </div>
+      </div>
+    </section>
+
+    <!-- Events Section -->
+    <section v-if="eventsData && eventsData.length > 0" class="animate-slide-up" style="animation-delay: 50ms;">
+      <div class="mb-8 text-center">
+        <h2 class="text-3xl font-black tracking-tight text-slate-900 uppercase text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-primary-400">{{ t('user.ongoingEvents') }}</h2>
+      </div>
+      
+      <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <a
+          v-for="event in eventsData"
+          :key="event.id"
+          :href="event.link || '#'"
+          class="group relative flex flex-col overflow-hidden rounded-2xl bg-slate-900 shadow-xl transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-primary-900/20"
+        >
+          <div class="aspect-[4/5] w-full overflow-hidden">
+            <img
+              v-if="event.imageUrl"
+              :src="event.imageUrl"
+              :alt="event.title"
+              class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+            >
+            <div v-else class="flex h-full w-full items-center justify-center bg-slate-800 text-slate-500">
+              Chưa có ảnh
+            </div>
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent opacity-80"></div>
+          </div>
+          
+          <div class="absolute bottom-0 left-0 right-0 p-6">
+            <h3 class="mb-2 text-lg font-bold leading-tight text-white group-hover:text-primary-400 transition-colors">
+              {{ event.title }}
+            </h3>
+            <p class="line-clamp-3 text-sm text-slate-300">
+              {{ event.description }}
+            </p>
+          </div>
+        </a>
       </div>
     </section>
 

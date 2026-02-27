@@ -62,7 +62,8 @@ const messages: Record<Locale, Dictionary> = {
       emptyStateTitle: 'Chưa có phiên đấu giá nào',
       emptyStateDesc: 'Hiện tại chưa có sản phẩm nào đang được đấu giá. Vui lòng quay lại sau!',
       noProductsTitle: 'Chưa có phiên đấu giá nào',
-      verifyIdSubtitle: 'Vui lòng nhập ID khách hàng để tiếp tục'
+      verifyIdSubtitle: 'Vui lòng nhập ID khách hàng để tiếp tục',
+      ongoingEvents: 'Các sự kiện đang diễn ra'
     },
     auction: {
       backToList: 'Quay lại danh sách',
@@ -221,7 +222,8 @@ const messages: Record<Locale, Dictionary> = {
       emptyStateTitle: 'No active auctions',
       emptyStateDesc: 'There are currently no products up for auction. Please check back later!',
       noProductsTitle: 'No active auctions',
-      verifyIdSubtitle: 'Please enter your customer ID to continue'
+      verifyIdSubtitle: 'Please enter your customer ID to continue',
+      ongoingEvents: 'Ongoing Events'
     },
     auction: {
       backToList: 'Back to list',
