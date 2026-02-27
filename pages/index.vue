@@ -193,15 +193,15 @@ onMounted(() => {
 <template>
   <div class="w-screen relative left-1/2 right-1/2 -mx-[50vw] -mt-8 -mb-8 flex flex-col">
     <!-- Hero Section -->
-    <section class="relative overflow-hidden bg-slate-900">
+    <section class="relative overflow-hidden bg-[#031729]">
       <div class="absolute inset-0">
         <img
           src="/uploads/Banner.jpg"
           alt="Event Banner"
           class="h-full w-full object-cover object-center opacity-60 transition-transform duration-1000 hover:scale-105"
         >
-        <!-- Gradient blending into the events section background (#050505) -->
-        <div class="absolute inset-0 bg-gradient-to-t from-[#050505] via-slate-900/40 to-transparent"></div>
+        <!-- Gradient blending into the events section background (#031729) -->
+        <div class="absolute inset-0 bg-gradient-to-t from-[#031729] via-slate-900/40 to-transparent"></div>
         <div class="absolute inset-0 bg-gradient-to-r from-slate-900/80 via-transparent to-transparent"></div>
       </div>
       
@@ -233,10 +233,10 @@ onMounted(() => {
     </section>
 
     <!-- Events Section -->
-    <section v-if="eventsData && eventsData.length > 0" class="relative overflow-hidden bg-[#050505] pb-16 pt-10 group/section">
+    <section v-if="eventsData && eventsData.length > 0" class="relative overflow-hidden bg-[#031729] pb-16 pt-10 group/section">
       <!-- Background Pattern -->
       <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(#00ff66 1px, transparent 1px); background-size: 30px 30px;"></div>
-      <div class="absolute inset-0 bg-gradient-to-b from-transparent via-[#050505]/80 to-[#050505]"></div>
+      <div class="absolute inset-0 bg-gradient-to-b from-transparent via-[#031729]/80 to-[#031729]"></div>
       
       <div class="relative z-20 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="mb-12 text-center animate-slide-up" style="animation-delay: 50ms;">
@@ -306,10 +306,10 @@ onMounted(() => {
       </div>
     </section>
 
-    <section v-if="hasFeaturedSection" class="relative overflow-hidden bg-[#050505] pb-24 pt-8">
+    <section v-if="hasFeaturedSection" class="relative overflow-hidden bg-[#031729] pb-24 pt-8">
       <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(#00ff66 1px, transparent 1px); background-size: 30px 30px;"></div>
-      <div class="absolute inset-0 bg-gradient-to-b from-transparent via-[#050505]/80 to-[#050505]"></div>
-      <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent to-slate-900 z-10 pointer-events-none"></div>
+      <div class="absolute inset-0 bg-gradient-to-b from-transparent via-[#031729]/80 to-[#031729]"></div>
+      <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent to-[#02111a] z-10 pointer-events-none"></div>
 
       <div class="relative z-20 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="mb-8 text-center">

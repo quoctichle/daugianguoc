@@ -24,7 +24,7 @@ const logoutFromMenu = async () => {
 </script>
 
 <template>
-  <div class="relative flex min-h-screen flex-col overflow-x-hidden bg-[#050505] text-slate-200 font-sans selection:bg-primary-500 selection:text-white">
+  <div class="relative flex min-h-screen flex-col overflow-x-hidden bg-[#031729] text-slate-200 font-sans selection:bg-primary-500 selection:text-white">
     <!-- Dynamic Background -->
     <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
       <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.03]"></div>
@@ -111,7 +111,7 @@ const logoutFromMenu = async () => {
     </main>
 
     <!-- Footer -->
-    <footer class="relative overflow-hidden bg-slate-900 text-slate-300">
+    <footer class="relative overflow-hidden bg-[#02111a] text-slate-300">
       <!-- Decorative top border/glow -->
       <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary-500/50 to-transparent"></div>
       
