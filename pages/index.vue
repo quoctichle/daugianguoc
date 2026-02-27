@@ -131,20 +131,20 @@ const confirmProductId = () => {
               <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary-400 opacity-75"></span>
               <span class="relative inline-flex h-2 w-2 rounded-full bg-primary-500"></span>
             </span>
-            Đang diễn ra {{ activeCount }} phiên đấu giá
+            {{ t('user.activeCount', { count: activeCount }) }}
           </span>
           <h1 class="mb-6 text-4xl font-black tracking-tight text-white sm:text-5xl lg:text-6xl">
-            Sở hữu siêu phẩm với <span class="bg-gradient-to-r from-primary-400 to-accent-400 bg-clip-text text-transparent">giá 0đ</span>
+            {{ t('user.heroTitle') }} <span class="bg-gradient-to-r from-primary-400 to-accent-400 bg-clip-text text-transparent">{{ t('user.heroPrice') }}</span>
           </h1>
           <p class="mb-8 text-lg text-slate-300 sm:text-xl">
-            Tham gia đấu giá ngược ngay hôm nay. Người trả giá thấp nhất và duy nhất sẽ là người chiến thắng!
+            {{ t('user.heroSubtitle') }}
           </p>
           <div class="flex flex-wrap gap-4">
             <button class="rounded-full bg-gradient-to-r from-primary-600 to-primary-500 px-8 py-4 font-bold text-white shadow-lg shadow-primary-500/30 transition-all hover:-translate-y-1 hover:shadow-primary-500/50">
-              Khám phá ngay
+              {{ t('user.exploreNow') }}
             </button>
             <button class="rounded-full border border-white/20 bg-white/10 px-8 py-4 font-bold text-white backdrop-blur-md transition-all hover:bg-white/20">
-              Tìm hiểu luật chơi
+              {{ t('user.learnRules') }}
             </button>
           </div>
         </div>
@@ -156,7 +156,7 @@ const confirmProductId = () => {
       <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h2 class="text-3xl font-black tracking-tight text-slate-900">{{ t('user.listTitle') }}</h2>
-          <p class="mt-2 text-slate-500">Cơ hội vàng không thể bỏ lỡ. Hãy chọn sản phẩm bạn yêu thích.</p>
+          <p class="mt-2 text-slate-500">{{ t('user.listSubtitle') }}</p>
         </div>
         
         <div class="flex items-center gap-3 rounded-xl bg-white p-1.5 shadow-sm ring-1 ring-slate-200">
@@ -221,7 +221,7 @@ const confirmProductId = () => {
         <div class="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-100 text-slate-400">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" /></svg>
         </div>
-        <h3 class="text-lg font-bold text-slate-900">Chưa có sản phẩm nào</h3>
+        <h3 class="text-lg font-bold text-slate-900">{{ t('user.noProductsTitle') }}</h3>
         <p class="mt-1 text-slate-500">{{ t('user.noProducts') }}</p>
       </div>
     </section>
@@ -251,7 +251,7 @@ const confirmProductId = () => {
             </div>
             <div>
               <h3 class="text-xl font-bold text-slate-900">{{ t('user.verifyIdTitle') }}</h3>
-              <p class="text-sm text-slate-500">Sản phẩm dành riêng cho khách hàng cũ</p>
+              <p class="text-sm text-slate-500">{{ t('user.verifyIdSubtitle') }}</p>
             </div>
           </div>
 

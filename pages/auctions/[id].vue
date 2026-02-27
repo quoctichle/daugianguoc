@@ -204,7 +204,7 @@ onUnmounted(() => {
             >
             <div v-else class="relative z-10 flex flex-col items-center text-slate-400">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-              <span class="mt-4 font-medium">Chưa có hình ảnh</span>
+              <span class="mt-4 font-medium">{{ t('auction.noImage') }}</span>
             </div>
             
             <!-- Badges -->
@@ -217,7 +217,7 @@ onUnmounted(() => {
                   <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75"></span>
                   <span class="relative inline-flex h-2.5 w-2.5 rounded-full bg-white"></span>
                 </span>
-                {{ productDetail.status === 'active' ? 'Đang diễn ra' : 'Đã kết thúc' }}
+                {{ productDetail.status === 'active' ? t('auction.status.active') : t('auction.status.completed') }}
               </div>
               <div v-if="productDetail.productCode" class="inline-flex w-fit rounded-full bg-black/40 px-3 py-1.5 text-xs font-mono font-medium text-white backdrop-blur-md ring-1 ring-white/20">
                 #{{ productDetail.productCode }}
@@ -334,12 +334,12 @@ onUnmounted(() => {
                     #{{ winner.rank }}
                   </div>
                   <div>
-                    <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Người chiến thắng</p>
+                    <p class="text-xs font-bold uppercase tracking-wider text-slate-400">{{ t('auction.winnerLabel') }}</p>
                     <p class="font-semibold text-slate-900">{{ maskEmail(winner.user.email) }}</p>
                   </div>
                 </div>
                 <div class="relative z-10 text-right">
-                  <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Mức giá</p>
+                  <p class="text-xs font-bold uppercase tracking-wider text-slate-400">{{ t('auction.priceLabel') }}</p>
                   <p class="text-xl font-black text-primary-600">{{ formatYen(winner.amount) }}</p>
                 </div>
               </div>
@@ -355,7 +355,7 @@ onUnmounted(() => {
               class="mt-8 w-full rounded-xl bg-slate-900 px-4 py-4 text-sm font-bold text-white transition-colors hover:bg-slate-800"
               @click="closeWinnerPopup"
             >
-              Đóng cửa sổ
+              {{ t('common.close') }}
             </button>
           </div>
         </div>

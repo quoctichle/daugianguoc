@@ -77,7 +77,7 @@ const logoutFromMenu = async () => {
               >
                 <div v-if="showUserMenu" class="absolute right-0 mt-3 w-56 origin-top-right rounded-xl border border-gray-100 bg-white p-2 shadow-xl ring-1 ring-black ring-opacity-5 focus:outline-none">
                   <div class="mb-2 border-b border-gray-100 px-3 py-2">
-                    <p class="text-xs text-gray-500">Đăng nhập với</p>
+                    <p class="text-xs text-gray-500">{{ t('common.loggedInAs') }}</p>
                     <p class="truncate text-sm font-medium text-gray-900">{{ user.email }}</p>
                   </div>
                   <NuxtLink v-if="user.role === 'ADMIN'" to="/admin" class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-primary-50 hover:text-primary-700">
@@ -129,7 +129,7 @@ const logoutFromMenu = async () => {
               </div>
             </div>
             <p class="text-sm leading-relaxed text-slate-400">
-              Nền tảng đấu giá ngược hàng đầu, mang đến cơ hội sở hữu các sản phẩm công nghệ cao cấp với mức giá không tưởng. Minh bạch, công bằng và đầy kịch tính.
+              {{ t('common.footerDesc') }}
             </p>
             <div class="flex gap-4">
               <a href="#" class="flex h-10 w-10 items-center justify-center rounded-full bg-slate-800 text-slate-400 transition-colors hover:bg-primary-600 hover:text-white">
@@ -143,7 +143,7 @@ const logoutFromMenu = async () => {
 
           <!-- Japan Office -->
           <div class="space-y-4 lg:col-span-4">
-            <h3 class="text-lg font-bold text-white">Trụ sở Nhật Bản</h3>
+            <h3 class="text-lg font-bold text-white">{{ t('common.japanOffice') }}</h3>
             <ul class="space-y-3 text-sm text-slate-400">
               <li class="flex items-start gap-3">
                 <svg xmlns="http://www.w3.org/2000/svg" class="mt-0.5 h-5 w-5 flex-shrink-0 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.243-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
@@ -158,18 +158,18 @@ const logoutFromMenu = async () => {
                 <span>ss@sunshineglobal.co.jp</span>
               </li>
               <li class="pt-2">
-                <p class="text-xs text-slate-500">MST: 9030001136641<br>Cấp ngày: 28/05/2020 bởi Cơ quan thuế quốc gia</p>
+                <p class="text-xs text-slate-500" v-html="t('common.japanTax')"></p>
               </li>
             </ul>
           </div>
 
           <!-- Vietnam Office -->
           <div class="space-y-4 lg:col-span-4">
-            <h3 class="text-lg font-bold text-white">Văn phòng Việt Nam</h3>
+            <h3 class="text-lg font-bold text-white">{{ t('common.vietnamOffice') }}</h3>
             <ul class="space-y-3 text-sm text-slate-400">
               <li class="flex items-start gap-3">
                 <svg xmlns="http://www.w3.org/2000/svg" class="mt-0.5 h-5 w-5 flex-shrink-0 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.243-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                <span>Số 29 ngõ 151B Thái Hà, phường Đống Đa, Thành phố Hà Nội</span>
+                <span>{{ t('common.vietnamAddress') }}</span>
               </li>
               <li class="flex items-center gap-3">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
@@ -180,7 +180,7 @@ const logoutFromMenu = async () => {
                 <span>ss@sunshineglobal.co.jp</span>
               </li>
               <li class="pt-2">
-                <p class="text-xs text-slate-500">MST: 0110257142<br>Cấp ngày: 20/02/2023 bởi Sở KH&ĐT TP. Hà Nội</p>
+                <p class="text-xs text-slate-500" v-html="t('common.vietnamTax')"></p>
               </li>
             </ul>
           </div>

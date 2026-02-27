@@ -10,7 +10,15 @@ const messages: Record<Locale, Dictionary> = {
       admin: 'Quản trị viên',
       logout: 'Đăng xuất',
       refresh: 'Làm mới',
-      loading: 'Đang tải...'
+      loading: 'Đang tải...',
+      footerDesc: 'Nền tảng đấu giá ngược hàng đầu, mang đến cơ hội sở hữu các sản phẩm công nghệ cao cấp với mức giá không tưởng. Minh bạch, công bằng và đầy kịch tính.',
+      japanOffice: 'Trụ sở Nhật Bản',
+      japanTax: 'MST: 9030001136641<br>Cấp ngày: 28/05/2020 bởi Cơ quan thuế quốc gia',
+      vietnamOffice: 'Văn phòng Việt Nam',
+      vietnamAddress: 'Số 29 ngõ 151B Thái Hà, phường Đống Đa, Thành phố Hà Nội',
+      vietnamTax: 'MST: 0110257142<br>Cấp ngày: 20/02/2023 bởi Sở KH&ĐT TP. Hà Nội',
+      loggedInAs: 'Đăng nhập với',
+      close: 'Đóng cửa sổ'
     },
     auth: {
       email: 'Email',
@@ -42,7 +50,18 @@ const messages: Record<Locale, Dictionary> = {
       idInputPlaceholder: 'Nhập ID khách hàng của bạn',
       idInvalid: 'ID không hợp lệ. Vui lòng nhập chính xác ID khách hàng của bạn',
       cancel: 'Hủy',
-      confirm: 'Xác nhận'
+      confirm: 'Xác nhận',
+      heroTitle: 'Đấu Giá Ngược',
+      heroSubtitle: 'Sở hữu siêu phẩm với giá',
+      heroPrice: '0¥',
+      heroAction: 'Tham gia ngay',
+      exploreNow: 'Khám phá ngay',
+      learnRules: 'Tìm hiểu thể lệ',
+      listSubtitle: 'Những sản phẩm công nghệ đỉnh cao đang chờ bạn',
+      emptyStateTitle: 'Chưa có phiên đấu giá nào',
+      emptyStateDesc: 'Hiện tại chưa có sản phẩm nào đang được đấu giá. Vui lòng quay lại sau!',
+      noProductsTitle: 'Chưa có phiên đấu giá nào',
+      verifyIdSubtitle: 'Vui lòng nhập ID khách hàng để tiếp tục'
     },
     auction: {
       backToList: 'Quay lại danh sách',
@@ -75,7 +94,10 @@ const messages: Record<Locale, Dictionary> = {
       revealAfterEnd: 'Khi kết thúc phiên, giá đấu của từng người sẽ được hiển thị.',
       popupTitle: '🎉 Chúc mừng người chiến thắng!',
       popupSubtitle: 'Phiên đấu giá đã kết thúc. Kết quả người thắng như sau:',
-      popupNoWinner: 'Phiên đã kết thúc nhưng chưa có người chiến thắng.'
+      popupNoWinner: 'Phiên đã kết thúc nhưng chưa có người chiến thắng.',
+      statusLabel: 'Trạng thái',
+      winnerLabel: 'Người chiến thắng',
+      priceLabel: 'Mức giá'
     },
     admin: {
       loggedIn: 'Đăng nhập',
@@ -146,7 +168,15 @@ const messages: Record<Locale, Dictionary> = {
       admin: 'Admin',
       logout: 'Log out',
       refresh: 'Refresh',
-      loading: 'Loading...'
+      loading: 'Loading...',
+      footerDesc: 'The leading reverse auction platform, bringing you the opportunity to own high-end tech products at unbelievable prices. Transparent, fair, and thrilling.',
+      japanOffice: 'Japan Headquarters',
+      japanTax: 'Tax Code: 9030001136641<br>Issued: 28/05/2020 by National Tax Agency',
+      vietnamOffice: 'Vietnam Office',
+      vietnamAddress: 'No. 29, Alley 151B Thai Ha, Dong Da District, Hanoi',
+      vietnamTax: 'Tax Code: 0110257142<br>Issued: 20/02/2023 by Hanoi DPI',
+      loggedInAs: 'Logged in as',
+      close: 'Close window'
     },
     auth: {
       email: 'Email',
@@ -178,7 +208,18 @@ const messages: Record<Locale, Dictionary> = {
       idInputPlaceholder: 'Enter your customer ID',
       idInvalid: 'Invalid ID. Please use format ID25011503.',
       cancel: 'Cancel',
-      confirm: 'Confirm'
+      confirm: 'Confirm',
+      heroTitle: 'Reverse Auction',
+      heroSubtitle: 'Own masterpieces for',
+      heroPrice: '0¥',
+      heroAction: 'Join Now',
+      exploreNow: 'Explore Now',
+      learnRules: 'Learn Rules',
+      listSubtitle: 'Top-tier tech products are waiting for you',
+      emptyStateTitle: 'No active auctions',
+      emptyStateDesc: 'There are currently no products up for auction. Please check back later!',
+      noProductsTitle: 'No active auctions',
+      verifyIdSubtitle: 'Please enter your customer ID to continue'
     },
     auction: {
       backToList: 'Back to list',
@@ -211,7 +252,10 @@ const messages: Record<Locale, Dictionary> = {
       revealAfterEnd: 'Bid prices will be shown when auction ends.',
       popupTitle: '🎉 Congratulations to the winners!',
       popupSubtitle: 'This auction has ended. Winning results:',
-      popupNoWinner: 'Auction ended with no winner yet.'
+      popupNoWinner: 'Auction ended with no winner yet.',
+      statusLabel: 'Status',
+      winnerLabel: 'Winner',
+      priceLabel: 'Price'
     },
     admin: {
       loggedIn: 'Signed in',
