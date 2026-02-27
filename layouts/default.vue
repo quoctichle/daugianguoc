@@ -34,7 +34,7 @@ const logoutFromMenu = async () => {
     </div>
 
     <!-- Header -->
-    <header class="sticky top-0 z-50 w-full border-b border-white/20 bg-white/70 backdrop-blur-xl shadow-sm transition-all duration-300">
+    <header class="sticky top-0 z-50 w-full border-b border-emerald-400/20 bg-gradient-to-r from-[#031729]/90 via-[#07312b]/85 to-[#0a3d2e]/90 backdrop-blur-xl shadow-[0_10px_30px_rgba(0,0,0,0.35)] transition-all duration-300">
       <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
         <NuxtLink to="/" class="group flex items-center gap-3 transition-transform hover:scale-105">
           <div class="relative flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-[#66cc00] to-[#009933] shadow-lg shadow-[#66cc00]/20">
@@ -52,16 +52,16 @@ const logoutFromMenu = async () => {
             <div class="relative">
               <button
                 type="button"
-                class="flex items-center gap-2 rounded-full border border-primary-100 bg-white px-4 py-2 text-sm font-semibold text-primary-900 shadow-sm transition-all hover:border-primary-300 hover:bg-primary-50 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+                class="flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white shadow-sm backdrop-blur-md transition-all hover:border-[#66cc00]/60 hover:bg-white/20 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#66cc00] focus:ring-offset-2 focus:ring-offset-transparent"
                 @click="toggleUserMenu"
               >
-                <div class="flex h-6 w-6 items-center justify-center rounded-full bg-primary-100 text-primary-700">
+                <div class="flex h-6 w-6 items-center justify-center rounded-full bg-white/20 text-[#66cc00]">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
                   </svg>
                 </div>
                 <span class="hidden sm:inline-block">{{ user.email.split('@')[0] }}</span>
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 transition-transform" :class="{'rotate-180': showUserMenu}" viewBox="0 0 20 20" fill="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white/70 transition-transform" :class="{'rotate-180': showUserMenu}" viewBox="0 0 20 20" fill="currentColor">
                   <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
                 </svg>
               </button>
