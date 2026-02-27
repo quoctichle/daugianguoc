@@ -1,9 +1,10 @@
 <script setup lang="ts">
 const sections = [
   {
-    title: 'Quản lý chung',
+    title: 'Quản lý nội dung',
     links: [
-      { label: 'Danh sách sự kiện', to: '/admin/events' }
+      { label: 'Quản lý sự kiện', to: '/admin/events' },
+      { label: 'Quản lý sản phẩm', to: '/admin/featured-products' }
     ]
   },
   {

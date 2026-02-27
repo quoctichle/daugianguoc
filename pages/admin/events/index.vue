@@ -10,9 +10,7 @@ const { data: events, refresh } = await useFetch<any[]>('/api/admin/events', {
 
 const isEditing = ref(false)
 const currentEvent = ref<any>({
-  code: '',
   title: '',
-  description: '',
   imageUrl: '',
   isActive: false,
   link: ''
@@ -23,9 +21,7 @@ const openEdit = (event?: any) => {
     currentEvent.value = { ...event }
   } else {
     currentEvent.value = {
-      code: '',
       title: '',
-      description: '',
       imageUrl: '',
       isActive: false,
       link: ''
@@ -112,10 +108,9 @@ const handleImageUpload = async (e: Event) => {
             <span class="rounded-full px-2 py-1 text-xs font-medium" :class="event.isActive ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-700'">
               {{ event.isActive ? 'Đang diễn ra' : 'Đã ẩn' }}
             </span>
-            <span class="text-xs text-slate-500">{{ event.code }}</span>
           </div>
-          <h3 class="font-bold text-slate-900">{{ event.title }}</h3>
-          <p class="mt-1 line-clamp-2 text-sm text-slate-500">{{ event.description }}</p>
+          <a :href="event.link || '#'" target="_blank" rel="noopener noreferrer" class="line-clamp-2 font-bold text-slate-900 hover:text-primary-700">{{ event.title }}</a>
+          <p class="mt-1 line-clamp-1 text-sm text-slate-500">{{ event.link || 'Chưa có link' }}</p>
           
           <div class="mt-4 flex gap-2">
             <button @click="openEdit(event)" class="flex-1 rounded-lg bg-slate-100 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-200">Sửa</button>
@@ -132,27 +127,17 @@ const handleImageUpload = async (e: Event) => {
         
         <div class="space-y-4">
           <div>
-            <label class="mb-1 block text-sm font-medium text-slate-700">Mã sự kiện (Code)</label>
-            <input v-model="currentEvent.code" type="text" class="w-full rounded-lg border border-slate-300 px-3 py-2" placeholder="VD: reverse-auction" />
-          </div>
-          
-          <div>
-            <label class="mb-1 block text-sm font-medium text-slate-700">Tên sự kiện</label>
+            <label class="mb-1 block text-sm font-medium text-slate-700">Tiêu đề</label>
             <input v-model="currentEvent.title" type="text" class="w-full rounded-lg border border-slate-300 px-3 py-2" />
           </div>
           
           <div>
-            <label class="mb-1 block text-sm font-medium text-slate-700">Mô tả ngắn</label>
-            <textarea v-model="currentEvent.description" rows="3" class="w-full rounded-lg border border-slate-300 px-3 py-2"></textarea>
+            <label class="mb-1 block text-sm font-medium text-slate-700">Link bài viết</label>
+            <input v-model="currentEvent.link" type="text" class="w-full rounded-lg border border-slate-300 px-3 py-2" placeholder="https://..." />
           </div>
           
           <div>
-            <label class="mb-1 block text-sm font-medium text-slate-700">Đường dẫn (Link)</label>
-            <input v-model="currentEvent.link" type="text" class="w-full rounded-lg border border-slate-300 px-3 py-2" placeholder="VD: /auctions hoặc https://..." />
-          </div>
-          
-          <div>
-            <label class="mb-1 block text-sm font-medium text-slate-700">Ảnh banner sự kiện</label>
+            <label class="mb-1 block text-sm font-medium text-slate-700">Ảnh sự kiện</label>
             <input type="file" accept="image/*" @change="handleImageUpload" class="w-full text-sm" />
             <img v-if="currentEvent.imageUrl" :src="currentEvent.imageUrl" class="mt-2 h-32 w-full rounded-lg object-cover" />
           </div>

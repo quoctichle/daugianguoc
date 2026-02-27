@@ -4,7 +4,7 @@ definePageMeta({
   middleware: ['admin']
 })
 
-await navigateTo('/admin/config')
+await navigateTo('/admin/events')
 </script>
 
 <template>

@@ -16,6 +16,14 @@ const { data: eventsData } = await useFetch<any[]>('/api/events', {
   headers: process.server ? useRequestHeaders(['cookie']) : undefined
 })
 
+const { data: featuredEventsData } = await useFetch<any[]>('/api/featured/events', {
+  headers: process.server ? useRequestHeaders(['cookie']) : undefined
+})
+
+const { data: featuredProductsData } = await useFetch<any[]>('/api/featured/products', {
+  headers: process.server ? useRequestHeaders(['cookie']) : undefined
+})
+
 const activeCount = computed(() => productsData.value?.filter(product => product.status === 'active').length || 0)
 
 const eventsScrollContainer = ref<HTMLElement | null>(null)
@@ -82,6 +90,39 @@ const scrollEvents = (direction: 'left' | 'right') => {
     container.scrollBy({ left: scrollAmount, behavior: 'smooth' })
   }
 }
+
+const featuredTab = ref<'events' | 'products'>('events')
+const featuredScrollContainer = ref<HTMLElement | null>(null)
+
+const activeFeaturedItems = computed(() => {
+  return featuredTab.value === 'events'
+    ? (featuredEventsData.value || [])
+    : (featuredProductsData.value || [])
+})
+
+const hasFeaturedSection = computed(() => {
+  return (featuredEventsData.value?.length || 0) > 0 || (featuredProductsData.value?.length || 0) > 0
+})
+
+watch(featuredTab, async () => {
+  await nextTick()
+  if (featuredScrollContainer.value) {
+    featuredScrollContainer.value.scrollLeft = 0
+  }
+})
+
+const scrollFeatured = (direction: 'left' | 'right') => {
+  if (!featuredScrollContainer.value) return
+  const container = featuredScrollContainer.value
+  const scrollAmount = container.clientWidth
+
+  if (direction === 'left') {
+    container.scrollBy({ left: -scrollAmount, behavior: 'smooth' })
+  }
+  else {
+    container.scrollBy({ left: scrollAmount, behavior: 'smooth' })
+  }
+}
 </script>
 
 <template>
@@ -127,14 +168,11 @@ const scrollEvents = (direction: 'left' | 'right') => {
     </section>
 
     <!-- Events Section -->
-    <section v-if="eventsData && eventsData.length > 0" class="relative overflow-hidden bg-[#050505] pb-24 pt-10 group/section">
+    <section v-if="eventsData && eventsData.length > 0" class="relative overflow-hidden bg-[#050505] pb-16 pt-10 group/section">
       <!-- Background Pattern -->
       <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(#00ff66 1px, transparent 1px); background-size: 30px 30px;"></div>
       <div class="absolute inset-0 bg-gradient-to-b from-transparent via-[#050505]/80 to-[#050505]"></div>
       
-      <!-- Gradient blending into footer -->
-      <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent to-slate-900 z-10 pointer-events-none"></div>
-
       <div class="relative z-20 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="mb-12 text-center animate-slide-up" style="animation-delay: 50ms;">
           <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight bg-gradient-to-r from-[#ffe600] to-[#66cc00] bg-clip-text text-transparent uppercase drop-shadow-[0_0_15px_rgba(102,204,0,0.3)] py-2 leading-normal">
@@ -194,6 +232,94 @@ const scrollEvents = (direction: 'left' | 'right') => {
                 <p class="line-clamp-4 text-sm text-gray-400 leading-relaxed">
                   {{ event.description }}
                 </p>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section v-if="hasFeaturedSection" class="relative overflow-hidden bg-[#050505] pb-24 pt-8">
+      <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(#00ff66 1px, transparent 1px); background-size: 30px 30px;"></div>
+      <div class="absolute inset-0 bg-gradient-to-b from-transparent via-[#050505]/80 to-[#050505]"></div>
+      <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent to-slate-900 z-10 pointer-events-none"></div>
+
+      <div class="relative z-20 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="mb-8 text-center">
+          <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight bg-gradient-to-r from-[#ffe600] to-[#66cc00] bg-clip-text text-transparent uppercase py-2 leading-normal">
+            CÁC TIN NỔI BẬT
+          </h2>
+        </div>
+
+        <div class="mb-8 flex items-center justify-center gap-4">
+          <button
+            type="button"
+            class="rounded-full px-6 py-2 text-sm font-bold uppercase tracking-wide transition-colors"
+            :class="featuredTab === 'events' ? 'bg-[#00ff66] text-black' : 'bg-white/10 text-white hover:bg-white/20'"
+            @click="featuredTab = 'events'"
+          >
+            Sự kiện
+          </button>
+          <button
+            type="button"
+            class="rounded-full px-6 py-2 text-sm font-bold uppercase tracking-wide transition-colors"
+            :class="featuredTab === 'products' ? 'bg-[#00ff66] text-black' : 'bg-white/10 text-white hover:bg-white/20'"
+            @click="featuredTab = 'products'"
+          >
+            Sản phẩm
+          </button>
+        </div>
+
+        <div class="relative">
+          <button
+            type="button"
+            class="absolute left-0 top-1/2 z-20 -ml-4 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-black/50 text-white backdrop-blur-sm transition-all hover:bg-[#00ff66] hover:text-black"
+            @click="scrollFeatured('left')"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-6 w-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+            </svg>
+          </button>
+
+          <button
+            type="button"
+            class="absolute right-0 top-1/2 z-20 -mr-4 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-black/50 text-white backdrop-blur-sm transition-all hover:bg-[#00ff66] hover:text-black"
+            @click="scrollFeatured('right')"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-6 w-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+            </svg>
+          </button>
+
+          <div
+            ref="featuredScrollContainer"
+            class="flex gap-8 overflow-x-auto pb-2"
+            style="scrollbar-width: none; -ms-overflow-style: none;"
+          >
+            <a
+              v-for="item in activeFeaturedItems"
+              :key="item.id"
+              :href="item.link || '#'"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="group w-full shrink-0 snap-start overflow-hidden rounded-xl border border-white/10 bg-white/5 transition-all duration-300 hover:-translate-y-2 sm:w-[calc(50%-1rem)] lg:w-[calc(25%-1.5rem)]"
+            >
+              <div class="aspect-video w-full overflow-hidden bg-slate-800">
+                <img
+                  v-if="item.imageUrl"
+                  :src="item.imageUrl"
+                  :alt="item.title"
+                  class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                >
+                <div v-else class="flex h-full w-full items-center justify-center text-slate-500">
+                  {{ t('auction.noImage') }}
+                </div>
+              </div>
+
+              <div class="p-4">
+                <h3 class="line-clamp-2 text-base font-bold leading-snug text-white transition-colors group-hover:text-[#00ff66]">
+                  {{ item.title }}
+                </h3>
               </div>
             </a>
           </div>
