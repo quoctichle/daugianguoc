@@ -142,7 +142,7 @@ onUnmounted(() => {
 
 <template>
   <div class="space-y-6 pb-12">
-    <NuxtLink to="/" class="group inline-flex items-center gap-2 text-sm font-medium text-slate-500 transition-colors hover:text-primary-600">
+    <NuxtLink to="/auctions" class="group inline-flex items-center gap-2 text-sm font-medium text-slate-500 transition-colors hover:text-primary-600">
       <div class="flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-sm ring-1 ring-slate-200 transition-transform group-hover:-translate-x-1 group-hover:bg-primary-50 group-hover:ring-primary-200">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
       </div>

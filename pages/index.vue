@@ -85,13 +85,13 @@ const scrollEvents = (direction: 'left' | 'right') => {
 </script>
 
 <template>
-  <div class="w-screen relative left-1/2 right-1/2 -mx-[50vw] -mt-8 flex flex-col">
+  <div class="w-screen relative left-1/2 right-1/2 -mx-[50vw] -mt-8 -mb-8 flex flex-col">
     <!-- Hero Section -->
     <section class="relative overflow-hidden bg-slate-900">
       <div class="absolute inset-0">
         <img
           src="/uploads/Banner.jpg"
-          alt="Auction Banner"
+          alt="Event Banner"
           class="h-full w-full object-cover opacity-60 transition-transform duration-1000 hover:scale-105"
         >
         <!-- Gradient blending into the events section background (#050505) -->
@@ -131,8 +131,11 @@ const scrollEvents = (direction: 'left' | 'right') => {
       <!-- Background Pattern -->
       <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(#00ff66 1px, transparent 1px); background-size: 30px 30px;"></div>
       <div class="absolute inset-0 bg-gradient-to-b from-transparent via-[#050505]/80 to-[#050505]"></div>
+      
+      <!-- Gradient blending into footer -->
+      <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent to-slate-900 z-10 pointer-events-none"></div>
 
-      <div class="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="relative z-20 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="mb-12 text-center animate-slide-up" style="animation-delay: 50ms;">
           <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-[#00ff66] uppercase drop-shadow-[0_0_15px_rgba(0,255,102,0.3)]">
             {{ t('user.ongoingEvents') }}
@@ -180,7 +183,7 @@ const scrollEvents = (direction: 'left' | 'right') => {
                   class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
                 >
                 <div v-else class="flex h-full w-full items-center justify-center bg-slate-800 text-slate-500">
-                  Chưa có ảnh
+                  {{ t('auction.noImage') }}
                 </div>
               </div>
               

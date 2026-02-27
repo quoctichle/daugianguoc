@@ -111,7 +111,10 @@ const logoutFromMenu = async () => {
     </main>
 
     <!-- Footer -->
-    <footer class="relative mt-20 overflow-hidden bg-slate-900 text-slate-300">
+    <footer class="relative overflow-hidden bg-slate-900 text-slate-300">
+      <!-- Decorative top border/glow -->
+      <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary-500/50 to-transparent"></div>
+      
       <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20"></div>
       <div class="absolute -top-24 left-1/2 h-48 w-1/2 -translate-x-1/2 rounded-full bg-primary-600/20 blur-[100px]"></div>
       
