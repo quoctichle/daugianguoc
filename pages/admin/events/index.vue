@@ -137,6 +137,10 @@ const handleImageUpload = async (e: Event) => {
     alert('Lỗi upload ảnh')
   }
 }
+
+const goToEventManagement = (id: string) => {
+  navigateTo(`/admin/events/${id}`)
+}
 </script>
 
 <template>
@@ -153,10 +157,12 @@ const handleImageUpload = async (e: Event) => {
 
     <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       <div v-for="event in events" :key="event.id" class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-        <div class="aspect-video w-full bg-slate-100">
-          <img v-if="event.imageUrl" :src="event.imageUrl" class="h-full w-full object-cover" >
-          <div v-else class="flex h-full items-center justify-center text-slate-400">Chưa có ảnh</div>
-        </div>
+        <button type="button" class="w-full text-left" @click="goToEventManagement(event.id)">
+          <div class="aspect-video w-full bg-slate-100">
+            <img v-if="event.imageUrl" :src="event.imageUrl" class="h-full w-full object-cover" >
+            <div v-else class="flex h-full items-center justify-center text-slate-400">Chưa có ảnh</div>
+          </div>
+        </button>
 
         <div class="p-4">
           <div class="mb-2 flex items-center justify-between">
@@ -166,15 +172,15 @@ const handleImageUpload = async (e: Event) => {
             <span class="text-xs font-semibold text-slate-500">ID: {{ event.eventId }}</span>
           </div>
 
-          <a :href="event.link || '/auctions'" target="_blank" rel="noopener noreferrer" class="line-clamp-2 font-bold text-slate-900 hover:text-primary-700">{{ event.title }}</a>
+          <button type="button" class="line-clamp-2 text-left font-bold text-slate-900 hover:text-primary-700" @click="goToEventManagement(event.id)">{{ event.title }}</button>
           <p class="mt-1 line-clamp-2 text-sm text-slate-500">{{ event.description || 'Chưa có mô tả' }}</p>
           <p class="mt-2 text-xs text-slate-500">Hình thức: {{ event.format === 'REVERSE_AUCTION' ? 'Đấu giá ngược' : event.format }}</p>
           <p class="mt-1 text-xs text-slate-500">Bắt đầu: {{ new Date(event.startsAt).toLocaleString() }}</p>
           <p class="mt-1 text-xs text-slate-500">Kết thúc: {{ new Date(event.endsAt).toLocaleString() }}</p>
 
           <div class="mt-4 flex gap-2">
-            <button @click="openEdit(event)" class="flex-1 rounded-lg bg-slate-100 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-200">Sửa</button>
-            <button @click="deleteEvent(event.id)" class="flex-1 rounded-lg bg-red-50 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-100">Xóa</button>
+            <button @click.stop="openEdit(event)" class="flex-1 rounded-lg bg-slate-100 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-200">Sửa</button>
+            <button @click.stop="deleteEvent(event.id)" class="flex-1 rounded-lg bg-red-50 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-100">Xóa</button>
           </div>
         </div>
       </div>

@@ -1,4 +1,8 @@
 <script setup lang="ts">
+const props = defineProps<{
+  fixedEventId?: string
+}>()
+
 const emit = defineEmits<{
   created: []
 }>()
@@ -26,6 +30,11 @@ const errorMessage = ref('')
 const submitting = ref(false)
 
 watch(eventsData, (value) => {
+  if (props.fixedEventId) {
+    form.eventId = props.fixedEventId
+    return
+  }
+
   if (!form.eventId && value?.length) {
     form.eventId = value[0].id
   }
@@ -63,6 +72,9 @@ const createProduct = async () => {
     })
 
   form.eventId = eventsData.value?.[0]?.id || ''
+    if (props.fixedEventId) {
+      form.eventId = props.fixedEventId
+    }
     form.name = ''
     form.isUsedProduct = false
     form.startsAt = ''
@@ -90,7 +102,7 @@ const createProduct = async () => {
     <form class="grid grid-cols-1 gap-3 md:grid-cols-2" @submit.prevent="createProduct">
       <label class="text-sm md:col-span-2">
         <span class="mb-1 block">{{ t('productForm.event') }}</span>
-        <select v-model="form.eventId" required class="w-full rounded-lg border px-3 py-2">
+        <select v-model="form.eventId" :disabled="Boolean(props.fixedEventId)" required class="w-full rounded-lg border px-3 py-2 disabled:bg-slate-100 disabled:text-slate-600">
           <option disabled value="">{{ t('productForm.selectEvent') }}</option>
           <option v-for="event in eventsData || []" :key="event.id" :value="event.id">
             ID {{ event.eventId }} - {{ event.title }}
