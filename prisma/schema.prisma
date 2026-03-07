@@ -112,6 +112,7 @@ model Event {
 
 enum EventFormat {
   REVERSE_AUCTION
+  VIETLOT
 }
 
 model News {

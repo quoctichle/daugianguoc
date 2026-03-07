@@ -9,6 +9,27 @@ const { data: events, refresh } = await useFetch<any[]>('/api/admin/events', {
 })
 
 const isEditing = ref(false)
+
+type EventFormat = 'REVERSE_AUCTION' | 'VIETLOT'
+
+const FORMAT_LABEL_MAP: Record<EventFormat, string> = {
+  REVERSE_AUCTION: 'Đấu giá ngược',
+  VIETLOT: 'Vietlot'
+}
+
+const FORMAT_LINK_MAP: Record<EventFormat, string> = {
+  REVERSE_AUCTION: '/auctions',
+  VIETLOT: '/vietlot'
+}
+
+const resolveFormat = (value?: string | null): EventFormat => {
+  return value === 'VIETLOT' ? 'VIETLOT' : 'REVERSE_AUCTION'
+}
+
+const formatLabel = (value?: string | null) => {
+  return FORMAT_LABEL_MAP[resolveFormat(value)]
+}
+
 const currentEvent = ref<any>({
   eventId: null,
   title: '',
@@ -56,10 +77,11 @@ const getEventStatus = (item: any) => {
 
 const openEdit = (event?: any) => {
   if (event) {
+    const format = resolveFormat(event.format)
     currentEvent.value = {
       ...event,
-      format: event.format || 'REVERSE_AUCTION',
-      link: event.link || '/auctions',
+      format,
+      link: event.link || FORMAT_LINK_MAP[format],
       startsAt: toDateTimeLocal(event.startsAt),
       endsAt: toDateTimeLocal(event.endsAt)
     }
@@ -71,13 +93,20 @@ const openEdit = (event?: any) => {
       description: '',
       format: 'REVERSE_AUCTION',
       imageUrl: '',
-      link: '/auctions',
+      link: FORMAT_LINK_MAP.REVERSE_AUCTION,
       startsAt: '',
       endsAt: ''
     }
   }
   isEditing.value = true
 }
+
+watch(
+  () => currentEvent.value?.format,
+  (value) => {
+    currentEvent.value.link = FORMAT_LINK_MAP[resolveFormat(value)]
+  }
+)
 
 const closeEdit = () => {
   isEditing.value = false
@@ -174,7 +203,7 @@ const goToEventManagement = (id: string) => {
 
           <button type="button" class="line-clamp-2 text-left font-bold text-slate-900 hover:text-primary-700" @click="goToEventManagement(event.id)">{{ event.title }}</button>
           <p class="mt-1 line-clamp-2 text-sm text-slate-500">{{ event.description || 'Chưa có mô tả' }}</p>
-          <p class="mt-2 text-xs text-slate-500">Hình thức: {{ event.format === 'REVERSE_AUCTION' ? 'Đấu giá ngược' : event.format }}</p>
+          <p class="mt-2 text-xs text-slate-500">Hình thức: {{ formatLabel(event.format) }}</p>
           <p class="mt-1 text-xs text-slate-500">Bắt đầu: {{ new Date(event.startsAt).toLocaleString() }}</p>
           <p class="mt-1 text-xs text-slate-500">Kết thúc: {{ new Date(event.endsAt).toLocaleString() }}</p>
 
@@ -210,6 +239,7 @@ const goToEventManagement = (id: string) => {
             <label class="mb-1 block text-sm font-medium text-slate-700">Hình thức</label>
             <select v-model="currentEvent.format" class="w-full rounded-lg border border-slate-300 px-3 py-2">
               <option value="REVERSE_AUCTION">Đấu giá ngược</option>
+              <option value="VIETLOT">Vietlot</option>
             </select>
           </div>
 

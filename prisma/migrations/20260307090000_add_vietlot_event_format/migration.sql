@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "EventFormat" ADD VALUE IF NOT EXISTS 'VIETLOT';

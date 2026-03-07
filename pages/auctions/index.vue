@@ -4,7 +4,7 @@ import AuctionCard from '~/components/auction/AuctionCard.vue'
 definePageMeta({ middleware: ['auth'] })
 const { t } = useAppI18n()
 
-const { data: productsData } = await useFetch<any[]>('/api/products/active', {
+const { data: productsData } = await useFetch<any[]>('/api/products/active?format=REVERSE_AUCTION', {
   headers: process.server ? useRequestHeaders(['cookie']) : undefined
 })
 

@@ -6,10 +6,15 @@ export default defineEventHandler(async (event) => {
     title?: string
     description?: string
     imageUrl?: string
-    format?: 'REVERSE_AUCTION'
+    format?: 'REVERSE_AUCTION' | 'VIETLOT'
     startsAt?: string
     endsAt?: string
   }>(event)
+
+  const FORMAT_LINK_MAP: Record<'REVERSE_AUCTION' | 'VIETLOT', string> = {
+    REVERSE_AUCTION: '/auctions',
+    VIETLOT: '/vietlot'
+  }
 
   const normalizeCode = (value: string) => {
     return value
@@ -39,7 +44,8 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Thời gian kết thúc phải sau thời gian bắt đầu' })
   }
 
-  const format = 'REVERSE_AUCTION'
+  const format = body.format === 'VIETLOT' ? 'VIETLOT' : 'REVERSE_AUCTION'
+  const link = FORMAT_LINK_MAP[format]
   const overlapEvent = await prisma.event.findFirst({
     where: {
       format,
@@ -68,7 +74,7 @@ export default defineEventHandler(async (event) => {
       description: body.description?.trim() || null,
       imageUrl: body.imageUrl?.trim() || null,
       format,
-      link: '/auctions',
+      link,
       startsAt,
       endsAt
     }
