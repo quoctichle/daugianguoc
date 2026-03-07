@@ -1,4 +1,5 @@
 import { prisma } from '~/server/utils/prisma'
+import { ensureVietlotPrizeConfig } from '~/server/utils/vietlot'
 
 export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, 'id')
@@ -8,6 +9,15 @@ export default defineEventHandler(async (event) => {
     description?: string
     imageUrl?: string
     format?: 'REVERSE_AUCTION' | 'VIETLOT'
+    vietlotPrize?: {
+      specialPrize?: string
+      firstPrize?: string
+      secondPrize?: string
+      thirdPrize?: string
+      fourthPrize?: string
+      fifthPrize?: string
+      consolationPrize?: string
+    }
     startsAt?: string
     endsAt?: string
   }>(event)
@@ -76,6 +86,24 @@ export default defineEventHandler(async (event) => {
       endsAt
     }
   })
+
+  if (format === 'VIETLOT') {
+    const base = await ensureVietlotPrizeConfig(prisma, id)
+    const input = body.vietlotPrize || {}
+
+    await prisma.vietlotPrizeConfig.update({
+      where: { eventId: id },
+      data: {
+        specialPrize: input.specialPrize?.trim() || base.specialPrize,
+        firstPrize: input.firstPrize?.trim() || base.firstPrize,
+        secondPrize: input.secondPrize?.trim() || base.secondPrize,
+        thirdPrize: input.thirdPrize?.trim() || base.thirdPrize,
+        fourthPrize: input.fourthPrize?.trim() || base.fourthPrize,
+        fifthPrize: input.fifthPrize?.trim() || base.fifthPrize,
+        consolationPrize: input.consolationPrize?.trim() || base.consolationPrize
+      }
+    })
+  }
   
   return updatedEvent
 })

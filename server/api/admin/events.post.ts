@@ -1,4 +1,5 @@
 import { prisma } from '~/server/utils/prisma'
+import { ensureVietlotPrizeConfig } from '~/server/utils/vietlot'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody<{
@@ -79,6 +80,10 @@ export default defineEventHandler(async (event) => {
       endsAt
     }
   })
+
+  if (format === 'VIETLOT') {
+    await ensureVietlotPrizeConfig(prisma, newEvent.id)
+  }
   
   return newEvent
 })

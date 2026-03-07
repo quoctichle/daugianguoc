@@ -17,6 +17,7 @@ model User {
   role      UserRole  @default(USER)
   bids      Bid[]
   winners   Winner[]
+  vietlotTickets VietlotTicket[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 }
@@ -106,6 +107,9 @@ model Event {
   startsAt    DateTime @default(now())
   endsAt      DateTime @default(dbgenerated("(now() + interval '1 day')"))
   products    Product[]
+  vietlotConfig VietlotPrizeConfig?
+  vietlotDraws VietlotDraw[]
+  vietlotTickets VietlotTicket[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -133,4 +137,63 @@ model FeaturedProduct {
   isActive  Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model VietlotPrizeConfig {
+  id            String   @id @default(cuid())
+  eventId       String   @unique
+  specialPrize  String
+  firstPrize    String
+  secondPrize   String
+  thirdPrize    String
+  fourthPrize   String
+  fifthPrize    String
+  consolationPrize String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  event         Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+model VietlotDraw {
+  id            String   @id @default(cuid())
+  eventId       String
+  roundStart    DateTime
+  roundEnd      DateTime
+  winningNumbers Json
+  createdAt     DateTime @default(now())
+  event         Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, roundStart])
+  @@index([eventId, roundEnd])
+}
+
+model VietlotTicket {
+  id            String   @id @default(cuid())
+  eventId       String
+  userId        String
+  roundStart    DateTime
+  roundEnd      DateTime
+  pickedNumbers Json
+  matchCount    Int?
+  prizeTier     VietlotPrizeTier?
+  prizeLabel    String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  event         Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, userId, roundStart])
+  @@index([eventId, roundStart])
+  @@index([userId, createdAt])
+}
+
+enum VietlotPrizeTier {
+  SPECIAL
+  FIRST
+  SECOND
+  THIRD
+  FOURTH
+  FIFTH
+  CONSOLATION
+  NONE
 }

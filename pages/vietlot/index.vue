@@ -1,129 +1,220 @@
 <script setup lang="ts">
-import AuctionCard from '~/components/auction/AuctionCard.vue'
-
 definePageMeta({ middleware: ['auth'] })
 
-const { data: productsData } = await useFetch<any[]>('/api/products/active?format=VIETLOT', {
+const selectedNumbers = ref<number[]>([])
+const isSubmitting = ref(false)
+const submitMessage = ref('')
+const submitError = ref('')
+const now = ref(Date.now())
+
+const { data: vietlotState, refresh } = await useFetch<any>('/api/vietlot/state', {
   headers: process.server ? useRequestHeaders(['cookie']) : undefined
 })
 
-const sortedProducts = computed(() => {
-  const statusPriority: Record<string, number> = {
-    active: 0,
-    pending: 1,
-    completed: 2
-  }
+const eventData = computed(() => vietlotState.value?.event || null)
+const currentRound = computed(() => vietlotState.value?.currentRound || null)
+const myCurrentTicket = computed(() => vietlotState.value?.myCurrentTicket || null)
+const recentResults = computed(() => vietlotState.value?.recentResults || [])
+const prizeConfig = computed(() => vietlotState.value?.prizeConfig || null)
 
-  return [...(productsData.value || [])].sort((a, b) => {
-    const priorityA = statusPriority[a.status] ?? 3
-    const priorityB = statusPriority[b.status] ?? 3
+watch(myCurrentTicket, (ticket) => {
+  if (!ticket?.pickedNumbers) return
+  selectedNumbers.value = ticket.pickedNumbers.map((value: string) => Number(value))
+}, { immediate: true })
 
-    if (priorityA !== priorityB) {
-      return priorityA - priorityB
-    }
-
-    if (a.status === 'active' && b.status === 'active') {
-      return new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime()
-    }
-
-    return new Date(b.endedAt || 0).getTime() - new Date(a.endedAt || 0).getTime()
-  })
+const remainingSeconds = computed(() => {
+  if (!currentRound.value?.roundEnd) return 0
+  const end = new Date(currentRound.value.roundEnd).getTime()
+  return Math.max(0, Math.floor((end - now.value) / 1000))
 })
 
-const pageSize = 9
-const currentPage = ref(1)
-
-const totalPages = computed(() => {
-  return Math.max(1, Math.ceil(sortedProducts.value.length / pageSize))
+const countdownLabel = computed(() => {
+  const total = remainingSeconds.value
+  const minutes = Math.floor(total / 60)
+  const seconds = total % 60
+  return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
 })
 
-const paginatedProducts = computed(() => {
-  const startIndex = (currentPage.value - 1) * pageSize
-  return sortedProducts.value.slice(startIndex, startIndex + pageSize)
-})
+const numberLabel = (value: number) => `${value}`.padStart(2, '0')
 
-watch([sortedProducts, totalPages], () => {
-  if (currentPage.value > totalPages.value) {
-    currentPage.value = totalPages.value
-  }
-})
+const toggleNumber = (value: number) => {
+  submitMessage.value = ''
+  submitError.value = ''
 
-const goToPage = (page: number) => {
-  if (page < 1 || page > totalPages.value) {
+  const index = selectedNumbers.value.indexOf(value)
+  if (index >= 0) {
+    selectedNumbers.value.splice(index, 1)
+    selectedNumbers.value.sort((a, b) => a - b)
     return
   }
-  currentPage.value = page
+
+  if (selectedNumbers.value.length >= 10) {
+    submitError.value = 'Ban chi duoc chon toi da 10 so.'
+    return
+  }
+
+  selectedNumbers.value.push(value)
+  selectedNumbers.value.sort((a, b) => a - b)
 }
 
-const goToPreviousPage = () => {
-  goToPage(currentPage.value - 1)
+const submitNumbers = async () => {
+  submitMessage.value = ''
+  submitError.value = ''
+
+  if (!eventData.value?.id) {
+    submitError.value = 'Khong tim thay su kien Vietlot dang hoat dong.'
+    return
+  }
+
+  if (selectedNumbers.value.length !== 10) {
+    submitError.value = 'Ban phai chon dung 10 so.'
+    return
+  }
+
+  isSubmitting.value = true
+  try {
+    await $fetch('/api/vietlot/play', {
+      method: 'POST',
+      body: {
+        eventId: eventData.value.id,
+        numbers: selectedNumbers.value
+      }
+    })
+
+    submitMessage.value = 'Da luu bo so cua ban cho ky quay hien tai.'
+    await refresh()
+  }
+  catch (error: any) {
+    submitError.value = error?.data?.statusMessage || 'Khong the luu bo so.'
+  }
+  finally {
+    isSubmitting.value = false
+  }
 }
 
-const goToNextPage = () => {
-  goToPage(currentPage.value + 1)
-}
+const prizeRules = computed(() => {
+  if (!prizeConfig.value) return []
+  return [
+    { match: '10 so', label: prizeConfig.value.specialPrize },
+    { match: '9 so', label: prizeConfig.value.firstPrize },
+    { match: '8 so', label: prizeConfig.value.secondPrize },
+    { match: '7 so', label: prizeConfig.value.thirdPrize },
+    { match: '6 so', label: prizeConfig.value.fourthPrize },
+    { match: '5 so', label: prizeConfig.value.fifthPrize },
+    { match: '0 so', label: prizeConfig.value.consolationPrize },
+    { match: '1-4 so', label: 'Khong co giai' }
+  ]
+})
 
-const onSelectProduct = (product: any) => {
-  navigateTo(`/vietlot/${product.id}`)
-}
+onMounted(() => {
+  const timer = window.setInterval(() => {
+    now.value = Date.now()
+  }, 1000)
+
+  const puller = window.setInterval(async () => {
+    await refresh()
+  }, 10000)
+
+  onBeforeUnmount(() => {
+    window.clearInterval(timer)
+    window.clearInterval(puller)
+  })
+})
 </script>
 
 <template>
-  <div class="space-y-8 pb-12">
-    <section>
-      <div class="mb-8 flex items-end justify-between gap-4">
-        <div>
-          <h1 class="text-3xl font-black tracking-tight text-white">Vietlot</h1>
-          <p class="mt-2 text-slate-400">Danh sach phien Vietlot dang dien ra va da ket thuc.</p>
+  <section class="space-y-8 pb-12">
+    <div class="rounded-3xl border border-amber-400/30 bg-gradient-to-br from-amber-500/15 via-yellow-500/10 to-orange-500/10 p-6 shadow-xl shadow-amber-900/10">
+      <h1 class="text-3xl font-black text-white">Vietlot</h1>
+      <p class="mt-2 text-sm text-amber-100/90">{{ eventData?.title || 'Su kien quay so 5 phut/lần' }}</p>
+      <p class="mt-4 text-sm text-slate-200">Moi 5 phut he thong quay ngau nhien 10 so (01-99). Ban chon 10 so de du thuong.</p>
+      <div class="mt-5 inline-flex items-center rounded-xl bg-slate-950/40 px-4 py-2 text-sm font-semibold text-amber-300 ring-1 ring-amber-300/30">
+        Con lai den ky quay: {{ countdownLabel }}
+      </div>
+    </div>
+
+    <div v-if="eventData" class="grid gap-6 lg:grid-cols-3">
+      <div class="lg:col-span-2 space-y-4 rounded-3xl border border-slate-700 bg-slate-900/50 p-5">
+        <div class="flex items-center justify-between">
+          <h2 class="text-lg font-bold text-white">Chon 10 so cua ban</h2>
+          <span class="text-sm text-slate-400">Da chon: {{ selectedNumbers.length }}/10</span>
         </div>
+
+        <div class="grid grid-cols-6 gap-2 sm:grid-cols-9 md:grid-cols-11">
+          <button
+            v-for="value in 99"
+            :key="value"
+            type="button"
+            class="rounded-lg border px-2 py-2 text-sm font-semibold transition"
+            :class="selectedNumbers.includes(value) ? 'border-amber-300 bg-amber-400/25 text-amber-200' : 'border-slate-700 bg-slate-800/70 text-slate-200 hover:border-slate-500'"
+            @click="toggleNumber(value)"
+          >
+            {{ numberLabel(value) }}
+          </button>
+        </div>
+
+        <div class="rounded-xl border border-slate-700 bg-slate-950/40 p-3 text-sm text-slate-200">
+          Bo so cua ban: <strong>{{ selectedNumbers.map(numberLabel).join(', ') || '-' }}</strong>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            class="rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-5 py-2.5 text-sm font-bold text-slate-950 disabled:opacity-60"
+            :disabled="isSubmitting || selectedNumbers.length !== 10"
+            @click="submitNumbers"
+          >
+            {{ isSubmitting ? 'Dang luu...' : 'Xac nhan bo so' }}
+          </button>
+          <button type="button" class="rounded-xl border border-slate-600 px-4 py-2 text-sm text-slate-200" @click="selectedNumbers = []">Xoa nhanh</button>
+        </div>
+
+        <p v-if="submitMessage" class="text-sm text-emerald-400">{{ submitMessage }}</p>
+        <p v-if="submitError" class="text-sm text-rose-400">{{ submitError }}</p>
       </div>
 
-      <template v-if="sortedProducts.length">
-        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:gap-8">
-          <AuctionCard
-            v-for="(product, index) in paginatedProducts"
-            :key="product.id"
-            :product="product"
-            :active="product.status === 'active'"
-            class="animate-slide-up"
-            :style="{ animationDelay: `${(index % pageSize) * 100}ms` }"
-            @select="onSelectProduct(product)"
-          />
-        </div>
-
-        <div v-if="sortedProducts.length > pageSize" class="mt-12 flex items-center justify-center">
-          <div class="flex items-center gap-2 rounded-full bg-slate-800/50 p-2 shadow-sm ring-1 ring-white/10 backdrop-blur-sm">
-            <button
-              type="button"
-              class="flex h-10 w-10 items-center justify-center rounded-full text-slate-300 transition-colors hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
-              :disabled="currentPage === 1"
-              @click="goToPreviousPage"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
-            </button>
-
-            <div class="flex items-center gap-1 px-4 font-medium text-slate-300">
-              <span class="text-primary-400">{{ currentPage }}</span>
-              <span class="text-slate-500">/</span>
-              <span>{{ totalPages }}</span>
-            </div>
-
-            <button
-              type="button"
-              class="flex h-10 w-10 items-center justify-center rounded-full text-slate-300 transition-colors hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
-              :disabled="currentPage === totalPages"
-              @click="goToNextPage"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" /></svg>
-            </button>
+      <div class="space-y-4 rounded-3xl border border-slate-700 bg-slate-900/50 p-5">
+        <h2 class="text-lg font-bold text-white">Bang giai thuong</h2>
+        <div class="space-y-2 text-sm">
+          <div v-for="rule in prizeRules" :key="rule.match" class="flex items-center justify-between rounded-lg bg-slate-800/60 px-3 py-2">
+            <span class="font-semibold text-amber-200">{{ rule.match }}</span>
+            <span class="text-slate-200">{{ rule.label }}</span>
           </div>
         </div>
-      </template>
-
-      <div v-else class="flex flex-col items-center justify-center rounded-3xl border border-dashed border-slate-700 bg-slate-800/30 py-24 text-center backdrop-blur-sm">
-        <h3 class="text-lg font-bold text-white">Chua co phien Vietlot</h3>
-        <p class="mt-1 text-slate-400">Vui long quay lai sau.</p>
       </div>
-    </section>
-  </div>
+    </div>
+
+    <div v-else class="rounded-2xl border border-dashed border-slate-600 bg-slate-900/40 p-10 text-center text-slate-300">
+      Chua co su kien Vietlot dang dien ra.
+    </div>
+
+    <div class="rounded-3xl border border-slate-700 bg-slate-900/50 p-5">
+      <h2 class="mb-4 text-lg font-bold text-white">Ket qua cua ban (10 ky gan nhat)</h2>
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-sm">
+          <thead class="text-left text-slate-300">
+            <tr>
+              <th class="px-3 py-2">Ky quay</th>
+              <th class="px-3 py-2">So da chon</th>
+              <th class="px-3 py-2">So trung thuong</th>
+              <th class="px-3 py-2">So trung</th>
+              <th class="px-3 py-2">Giai</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="row in recentResults" :key="row.id" class="border-t border-slate-800">
+              <td class="px-3 py-2 text-slate-300">{{ new Date(row.roundStart).toLocaleString() }}</td>
+              <td class="px-3 py-2 text-slate-200">{{ row.pickedNumbers.join(', ') }}</td>
+              <td class="px-3 py-2 font-semibold text-amber-200">{{ row.winningNumbers.join(', ') }}</td>
+              <td class="px-3 py-2 text-slate-200">{{ row.matchCount }}</td>
+              <td class="px-3 py-2 text-slate-200">{{ row.prizeLabel }}</td>
+            </tr>
+            <tr v-if="!recentResults.length">
+              <td colspan="5" class="px-3 py-6 text-center text-slate-400">Chua co ket qua.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
 </template>
