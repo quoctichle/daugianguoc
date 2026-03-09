@@ -36,21 +36,21 @@ const finalize = async () => {
     if (summary) {
       const failed = (result?.emailResults || [])
         .filter((item: any) => !item.sent)
-        .map((item: any) => `${item.email}: ${item.reason || 'Failed'}`)
+        .map((item: any) => `${item.email}: ${item.reason || 'Thất bại'}`)
 
-      finalizeMessage.value = `Đã chốt winner. Gửi mail thành công ${summary.sent}/${summary.total}.`
+      finalizeMessage.value = `Đã chốt người thắng. Gửi email thành công ${summary.sent}/${summary.total}.`
       if (failed.length) {
         finalizeError.value = failed.join(' | ')
       }
     }
     else {
-      finalizeMessage.value = 'Đã chốt winner.'
+      finalizeMessage.value = 'Đã chốt người thắng.'
     }
 
     await refresh()
   }
   catch (error: any) {
-    finalizeError.value = error?.data?.statusMessage || 'Không thể chốt winner.'
+    finalizeError.value = error?.data?.statusMessage || 'Không thể chốt người thắng.'
   }
 }
 </script>

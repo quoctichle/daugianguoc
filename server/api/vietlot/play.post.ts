@@ -8,11 +8,11 @@ export default defineEventHandler(async (event) => {
   const body = await readBody<{ eventId?: string, numbers?: number[] }>(event)
 
   if (!body.eventId) {
-    throw createError({ statusCode: 400, statusMessage: 'Thieu eventId.' })
+    throw createError({ statusCode: 400, statusMessage: 'Thiếu eventId.' })
   }
 
   if (!Array.isArray(body.numbers)) {
-    throw createError({ statusCode: 400, statusMessage: 'Danh sach so khong hop le.' })
+    throw createError({ statusCode: 400, statusMessage: 'Danh sách số không hợp lệ.' })
   }
 
   const now = new Date()
@@ -27,7 +27,7 @@ export default defineEventHandler(async (event) => {
   })
 
   if (!activeEvent) {
-    throw createError({ statusCode: 400, statusMessage: 'Su kien Vietlot khong con hoat dong.' })
+    throw createError({ statusCode: 400, statusMessage: 'Sự kiện Vietlot không còn hoạt động.' })
   }
 
   const normalizedNumbers = normalizeVietlotNumbers(body.numbers)

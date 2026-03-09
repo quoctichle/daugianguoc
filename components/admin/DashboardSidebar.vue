@@ -15,7 +15,7 @@ const route = useRoute()
 
 <template>
   <div>
-    <h2 class="mb-6 text-xl font-bold text-slate-900">Admin Dashboard</h2>
+    <h2 class="mb-6 text-xl font-bold text-slate-900">Bảng điều khiển quản trị</h2>
     <div class="space-y-6">
       <div v-for="section in sections" :key="section.title">
         <h3 class="mb-2 px-3 text-xs font-bold uppercase tracking-wider text-slate-400">{{ section.title }}</h3>

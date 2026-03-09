@@ -6,6 +6,13 @@ const isSubmitting = ref(false)
 const submitMessage = ref('')
 const submitError = ref('')
 const now = ref(Date.now())
+const displayDrawNumbers = ref<string[]>(Array.from({ length: 10 }, () => '00'))
+const isAnimatingDraw = ref(false)
+const latestDrawKey = ref('')
+const drawInitialized = ref(false)
+
+let spinIntervals: number[] = []
+let stopTimeouts: number[] = []
 
 const { data: vietlotState, refresh } = await useFetch<any>('/api/vietlot/state', {
   headers: process.server ? useRequestHeaders(['cookie']) : undefined
@@ -36,6 +43,46 @@ const countdownLabel = computed(() => {
 })
 
 const numberLabel = (value: number) => `${value}`.padStart(2, '0')
+const randomDrawNumber = () => numberLabel(Math.floor(Math.random() * 99) + 1)
+
+const clearDrawTimers = () => {
+  spinIntervals.forEach((timerId) => window.clearInterval(timerId))
+  stopTimeouts.forEach((timerId) => window.clearTimeout(timerId))
+  spinIntervals = []
+  stopTimeouts = []
+}
+
+const applyDrawNumbers = (numbers: string[]) => {
+  displayDrawNumbers.value = [...numbers]
+}
+
+const animateDrawNumbers = (numbers: string[]) => {
+  if (numbers.length !== 10) {
+    applyDrawNumbers(numbers)
+    return
+  }
+
+  clearDrawTimers()
+  isAnimatingDraw.value = true
+  displayDrawNumbers.value = Array.from({ length: 10 }, () => randomDrawNumber())
+
+  spinIntervals = Array.from({ length: 10 }, (_, index) => {
+    return window.setInterval(() => {
+      displayDrawNumbers.value[index] = randomDrawNumber()
+    }, 70 + (index * 10))
+  })
+
+  stopTimeouts = numbers.map((value, index) => {
+    return window.setTimeout(() => {
+      window.clearInterval(spinIntervals[index])
+      displayDrawNumbers.value[index] = value
+
+      if (index === numbers.length - 1) {
+        isAnimatingDraw.value = false
+      }
+    }, 1000 + (index * 450))
+  })
+}
 
 const toggleNumber = (value: number) => {
   submitMessage.value = ''
@@ -49,7 +96,7 @@ const toggleNumber = (value: number) => {
   }
 
   if (selectedNumbers.value.length >= 10) {
-    submitError.value = 'Ban chi duoc chon toi da 10 so.'
+    submitError.value = 'Bạn chỉ được chọn tối đa 10 số.'
     return
   }
 
@@ -62,12 +109,12 @@ const submitNumbers = async () => {
   submitError.value = ''
 
   if (!eventData.value?.id) {
-    submitError.value = 'Khong tim thay su kien Vietlot dang hoat dong.'
+    submitError.value = 'Không tìm thấy sự kiện Vietlot đang hoạt động.'
     return
   }
 
   if (selectedNumbers.value.length !== 10) {
-    submitError.value = 'Ban phai chon dung 10 so.'
+    submitError.value = 'Bạn phải chọn đúng 10 số.'
     return
   }
 
@@ -81,11 +128,11 @@ const submitNumbers = async () => {
       }
     })
 
-    submitMessage.value = 'Da luu bo so cua ban cho ky quay hien tai.'
+    submitMessage.value = 'Đã lưu bộ số của bạn cho kỳ quay hiện tại.'
     await refresh()
   }
   catch (error: any) {
-    submitError.value = error?.data?.statusMessage || 'Khong the luu bo so.'
+    submitError.value = error?.data?.statusMessage || 'Không thể lưu bộ số.'
   }
   finally {
     isSubmitting.value = false
@@ -95,16 +142,40 @@ const submitNumbers = async () => {
 const prizeRules = computed(() => {
   if (!prizeConfig.value) return []
   return [
-    { match: '10 so', label: prizeConfig.value.specialPrize },
-    { match: '9 so', label: prizeConfig.value.firstPrize },
-    { match: '8 so', label: prizeConfig.value.secondPrize },
-    { match: '7 so', label: prizeConfig.value.thirdPrize },
-    { match: '6 so', label: prizeConfig.value.fourthPrize },
-    { match: '5 so', label: prizeConfig.value.fifthPrize },
-    { match: '0 so', label: prizeConfig.value.consolationPrize },
-    { match: '1-4 so', label: 'Khong co giai' }
+    { match: '10 số', label: prizeConfig.value.specialPrize },
+    { match: '9 số', label: prizeConfig.value.firstPrize },
+    { match: '8 số', label: prizeConfig.value.secondPrize },
+    { match: '7 số', label: prizeConfig.value.thirdPrize },
+    { match: '6 số', label: prizeConfig.value.fourthPrize },
+    { match: '5 số', label: prizeConfig.value.fifthPrize },
+    { match: '0 số', label: prizeConfig.value.consolationPrize }
   ]
 })
+
+watch(recentResults, (rows) => {
+  const latest = rows?.[0]
+  if (!latest?.winningNumbers?.length) return
+
+  const drawKey = `${latest.roundStart}`
+  const winningNumbers = latest.winningNumbers as string[]
+
+  if (!drawInitialized.value) {
+    applyDrawNumbers(winningNumbers)
+    latestDrawKey.value = drawKey
+    drawInitialized.value = true
+    return
+  }
+
+  if (drawKey !== latestDrawKey.value) {
+    latestDrawKey.value = drawKey
+    animateDrawNumbers(winningNumbers)
+    return
+  }
+
+  if (!isAnimatingDraw.value) {
+    applyDrawNumbers(winningNumbers)
+  }
+}, { immediate: true })
 
 onMounted(() => {
   const timer = window.setInterval(() => {
@@ -116,6 +187,7 @@ onMounted(() => {
   }, 10000)
 
   onBeforeUnmount(() => {
+    clearDrawTimers()
     window.clearInterval(timer)
     window.clearInterval(puller)
   })
@@ -126,18 +198,32 @@ onMounted(() => {
   <section class="space-y-8 pb-12">
     <div class="rounded-3xl border border-amber-400/30 bg-gradient-to-br from-amber-500/15 via-yellow-500/10 to-orange-500/10 p-6 shadow-xl shadow-amber-900/10">
       <h1 class="text-3xl font-black text-white">Vietlot</h1>
-      <p class="mt-2 text-sm text-amber-100/90">{{ eventData?.title || 'Su kien quay so 5 phut/lần' }}</p>
-      <p class="mt-4 text-sm text-slate-200">Moi 5 phut he thong quay ngau nhien 10 so (01-99). Ban chon 10 so de du thuong.</p>
+      <p class="mt-2 text-sm text-amber-100/90">{{ eventData?.title || 'Sự kiện quay số 5 phút/lần' }}</p>
+      <p class="mt-4 text-sm text-slate-200">Mỗi 5 phút hệ thống quay ngẫu nhiên 10 số (01-99). Bạn chọn 10 số để dự thưởng.</p>
       <div class="mt-5 inline-flex items-center rounded-xl bg-slate-950/40 px-4 py-2 text-sm font-semibold text-amber-300 ring-1 ring-amber-300/30">
-        Con lai den ky quay: {{ countdownLabel }}
+        Còn lại đến kỳ quay: {{ countdownLabel }}
+      </div>
+
+      <div class="mt-5 rounded-2xl border border-amber-300/20 bg-slate-950/35 p-4">
+        <p class="mb-3 text-sm font-semibold text-amber-200">Kết quả quay gần nhất (10 số)</p>
+        <div class="grid grid-cols-5 gap-2 sm:grid-cols-10">
+          <div
+            v-for="(num, index) in displayDrawNumbers"
+            :key="index"
+            class="flex h-12 items-center justify-center rounded-xl border border-amber-200/25 bg-slate-900/70 text-base font-black tracking-wide text-amber-100"
+            :class="isAnimatingDraw ? 'animate-pulse' : ''"
+          >
+            {{ num }}
+          </div>
+        </div>
       </div>
     </div>
 
     <div v-if="eventData" class="grid gap-6 lg:grid-cols-3">
       <div class="lg:col-span-2 space-y-4 rounded-3xl border border-slate-700 bg-slate-900/50 p-5">
         <div class="flex items-center justify-between">
-          <h2 class="text-lg font-bold text-white">Chon 10 so cua ban</h2>
-          <span class="text-sm text-slate-400">Da chon: {{ selectedNumbers.length }}/10</span>
+          <h2 class="text-lg font-bold text-white">Chọn 10 số của bạn</h2>
+          <span class="text-sm text-slate-400">Đã chọn: {{ selectedNumbers.length }}/10</span>
         </div>
 
         <div class="grid grid-cols-6 gap-2 sm:grid-cols-9 md:grid-cols-11">
@@ -154,7 +240,7 @@ onMounted(() => {
         </div>
 
         <div class="rounded-xl border border-slate-700 bg-slate-950/40 p-3 text-sm text-slate-200">
-          Bo so cua ban: <strong>{{ selectedNumbers.map(numberLabel).join(', ') || '-' }}</strong>
+          Bộ số của bạn: <strong>{{ selectedNumbers.map(numberLabel).join(', ') || '-' }}</strong>
         </div>
 
         <div class="flex flex-wrap items-center gap-3">
@@ -164,9 +250,9 @@ onMounted(() => {
             :disabled="isSubmitting || selectedNumbers.length !== 10"
             @click="submitNumbers"
           >
-            {{ isSubmitting ? 'Dang luu...' : 'Xac nhan bo so' }}
+            {{ isSubmitting ? 'Đang lưu...' : 'Xác nhận bộ số' }}
           </button>
-          <button type="button" class="rounded-xl border border-slate-600 px-4 py-2 text-sm text-slate-200" @click="selectedNumbers = []">Xoa nhanh</button>
+          <button type="button" class="rounded-xl border border-slate-600 px-4 py-2 text-sm text-slate-200" @click="selectedNumbers = []">Xóa nhanh</button>
         </div>
 
         <p v-if="submitMessage" class="text-sm text-emerald-400">{{ submitMessage }}</p>
@@ -174,7 +260,7 @@ onMounted(() => {
       </div>
 
       <div class="space-y-4 rounded-3xl border border-slate-700 bg-slate-900/50 p-5">
-        <h2 class="text-lg font-bold text-white">Bang giai thuong</h2>
+        <h2 class="text-lg font-bold text-white">Bảng giải thưởng</h2>
         <div class="space-y-2 text-sm">
           <div v-for="rule in prizeRules" :key="rule.match" class="flex items-center justify-between rounded-lg bg-slate-800/60 px-3 py-2">
             <span class="font-semibold text-amber-200">{{ rule.match }}</span>
@@ -185,20 +271,20 @@ onMounted(() => {
     </div>
 
     <div v-else class="rounded-2xl border border-dashed border-slate-600 bg-slate-900/40 p-10 text-center text-slate-300">
-      Chua co su kien Vietlot dang dien ra.
+      Chưa có sự kiện Vietlot đang diễn ra.
     </div>
 
     <div class="rounded-3xl border border-slate-700 bg-slate-900/50 p-5">
-      <h2 class="mb-4 text-lg font-bold text-white">Ket qua cua ban (10 ky gan nhat)</h2>
+      <h2 class="mb-4 text-lg font-bold text-white">Kết quả của bạn (10 kỳ gần nhất)</h2>
       <div class="overflow-x-auto">
         <table class="min-w-full text-sm">
           <thead class="text-left text-slate-300">
             <tr>
-              <th class="px-3 py-2">Ky quay</th>
-              <th class="px-3 py-2">So da chon</th>
-              <th class="px-3 py-2">So trung thuong</th>
-              <th class="px-3 py-2">So trung</th>
-              <th class="px-3 py-2">Giai</th>
+              <th class="px-3 py-2">Kỳ quay</th>
+              <th class="px-3 py-2">Số đã chọn</th>
+              <th class="px-3 py-2">Số trúng thưởng</th>
+              <th class="px-3 py-2">Số trúng</th>
+              <th class="px-3 py-2">Giải</th>
             </tr>
           </thead>
           <tbody>
@@ -210,7 +296,7 @@ onMounted(() => {
               <td class="px-3 py-2 text-slate-200">{{ row.prizeLabel }}</td>
             </tr>
             <tr v-if="!recentResults.length">
-              <td colspan="5" class="px-3 py-6 text-center text-slate-400">Chua co ket qua.</td>
+              <td colspan="5" class="px-3 py-6 text-center text-slate-400">Chưa có kết quả.</td>
             </tr>
           </tbody>
         </table>
