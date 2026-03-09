@@ -8,12 +8,15 @@ const submitError = ref('')
 const now = ref(Date.now())
 const displayDrawNumbers = ref<string[]>(Array.from({ length: 10 }, () => '00'))
 const isAnimatingDraw = ref(false)
-const isContinuousSpinning = ref(false)
 const latestDrawKey = ref('')
+const roundKey = ref('')
+const waitingForRoundResult = ref(false)
+const spinCanStop = ref(false)
+const pendingResultNumbers = ref<string[] | null>(null)
 
 let spinIntervals: number[] = []
 let stopTimeouts: number[] = []
-let restartSpinTimeout: number | null = null
+let minSpinTimeout: number | null = null
 
 const { data: vietlotState, refresh } = await useFetch<any>('/api/vietlot/state', {
   headers: process.server ? useRequestHeaders(['cookie']) : undefined
@@ -52,29 +55,41 @@ const clearDrawTimers = () => {
 
   spinIntervals.forEach((timerId) => window.clearInterval(timerId))
   stopTimeouts.forEach((timerId) => window.clearTimeout(timerId))
-  if (restartSpinTimeout !== null) {
-    window.clearTimeout(restartSpinTimeout)
-    restartSpinTimeout = null
+  if (minSpinTimeout !== null) {
+    window.clearTimeout(minSpinTimeout)
+    minSpinTimeout = null
   }
 
   spinIntervals = []
   stopTimeouts = []
-  isContinuousSpinning.value = false
   isAnimatingDraw.value = false
+  waitingForRoundResult.value = false
+  spinCanStop.value = false
+  pendingResultNumbers.value = null
 }
 
 const applyDrawNumbers = (numbers: string[]) => {
   displayDrawNumbers.value = [...numbers]
 }
 
-const startContinuousSpin = () => {
+const startRoundSpin = () => {
   if (!import.meta.client) return
-  if (!eventData.value || isAnimatingDraw.value || isContinuousSpinning.value) return
+  if (!eventData.value || isAnimatingDraw.value) return
 
   spinIntervals.forEach((timerId) => window.clearInterval(timerId))
-  spinIntervals = []
+  stopTimeouts.forEach((timerId) => window.clearTimeout(timerId))
+  if (minSpinTimeout !== null) {
+    window.clearTimeout(minSpinTimeout)
+  }
 
-  isContinuousSpinning.value = true
+  spinIntervals = []
+  stopTimeouts = []
+  minSpinTimeout = null
+  waitingForRoundResult.value = true
+  spinCanStop.value = false
+  pendingResultNumbers.value = null
+
+  isAnimatingDraw.value = true
   displayDrawNumbers.value = Array.from({ length: 10 }, () => randomDrawNumber())
 
   spinIntervals = Array.from({ length: 10 }, (_, index) => {
@@ -82,9 +97,19 @@ const startContinuousSpin = () => {
       displayDrawNumbers.value[index] = randomDrawNumber()
     }, 60 + (index * 8))
   })
+
+  // Quay tối thiểu 5 giây trước khi cho phép dừng tuần tự theo kết quả mới.
+  minSpinTimeout = window.setTimeout(() => {
+    spinCanStop.value = true
+    minSpinTimeout = null
+
+    if (pendingResultNumbers.value?.length === 10) {
+      stopWithFinalNumbers(pendingResultNumbers.value)
+    }
+  }, 5000)
 }
 
-const animateDrawNumbers = (numbers: string[]) => {
+const stopWithFinalNumbers = (numbers: string[]) => {
   if (!import.meta.client) return
 
   if (numbers.length !== 10) {
@@ -92,13 +117,17 @@ const animateDrawNumbers = (numbers: string[]) => {
     return
   }
 
-  if (!isContinuousSpinning.value) {
-    startContinuousSpin()
+  if (!isAnimatingDraw.value) {
+    applyDrawNumbers(numbers)
+    waitingForRoundResult.value = false
+    spinCanStop.value = false
+    pendingResultNumbers.value = null
+    return
   }
 
   stopTimeouts.forEach((timerId) => window.clearTimeout(timerId))
   stopTimeouts = []
-  isAnimatingDraw.value = true
+  pendingResultNumbers.value = null
 
   stopTimeouts = numbers.map((value, index) => {
     return window.setTimeout(() => {
@@ -107,13 +136,10 @@ const animateDrawNumbers = (numbers: string[]) => {
 
       if (index === numbers.length - 1) {
         isAnimatingDraw.value = false
-        isContinuousSpinning.value = false
-
-        restartSpinTimeout = window.setTimeout(() => {
-          startContinuousSpin()
-        }, 1200)
+        waitingForRoundResult.value = false
+        spinCanStop.value = false
       }
-    }, 500 + (index * 350))
+    }, 300 + (index * 260))
   })
 }
 
@@ -195,33 +221,54 @@ watch(latestDraw, (draw) => {
   if (!latestDrawKey.value) {
     latestDrawKey.value = drawKey
     applyDrawNumbers(winningNumbers)
-    restartSpinTimeout = window.setTimeout(() => {
-      startContinuousSpin()
-    }, 900)
     return
   }
 
   if (drawKey !== latestDrawKey.value) {
     latestDrawKey.value = drawKey
-    animateDrawNumbers(winningNumbers)
+    if (waitingForRoundResult.value && isAnimatingDraw.value) {
+      if (spinCanStop.value) {
+        stopWithFinalNumbers(winningNumbers)
+      }
+      else {
+        pendingResultNumbers.value = winningNumbers
+      }
+      return
+    }
+
+    applyDrawNumbers(winningNumbers)
     return
   }
 
-  if (!isAnimatingDraw.value && !isContinuousSpinning.value) {
+  if (!isAnimatingDraw.value) {
     applyDrawNumbers(winningNumbers)
+  }
+}, { immediate: true })
+
+watch(() => currentRound.value?.roundStart, (value) => {
+  if (!import.meta.client) return
+  if (!value || !eventData.value) return
+
+  const key = `${value}`
+  if (!roundKey.value) {
+    roundKey.value = key
+    return
+  }
+
+  if (key !== roundKey.value) {
+    roundKey.value = key
+    startRoundSpin()
   }
 }, { immediate: true })
 
 watch(eventData, (value) => {
   if (!import.meta.client) return
-
-  if (value) {
-    startContinuousSpin()
-    return
-  }
+  if (value) return
 
   clearDrawTimers()
   displayDrawNumbers.value = Array.from({ length: 10 }, () => '00')
+  roundKey.value = ''
+  latestDrawKey.value = ''
 }, { immediate: true })
 
 onMounted(() => {
@@ -231,7 +278,7 @@ onMounted(() => {
 
   const puller = window.setInterval(async () => {
     await refresh()
-  }, 10000)
+  }, 3000)
 
   onBeforeUnmount(() => {
     clearDrawTimers()
@@ -258,7 +305,7 @@ onMounted(() => {
             v-for="(num, index) in displayDrawNumbers"
             :key="index"
             class="flex h-12 items-center justify-center rounded-xl border border-amber-200/25 bg-slate-900/70 text-base font-black tracking-wide text-amber-100"
-            :class="(isAnimatingDraw || isContinuousSpinning) ? 'animate-pulse' : ''"
+            :class="isAnimatingDraw ? 'animate-pulse' : ''"
           >
             {{ num }}
           </div>
