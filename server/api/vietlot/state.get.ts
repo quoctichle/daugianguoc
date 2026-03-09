@@ -29,7 +29,8 @@ export default defineEventHandler(async (event) => {
       event: null,
       currentRound: null,
       myCurrentTicket: null,
-      recentResults: []
+      recentResults: [],
+      latestDraw: null
     }
   }
 
@@ -70,6 +71,14 @@ export default defineEventHandler(async (event) => {
     take: 10
   })
 
+  const latestDraw = recentDraws[0]
+    ? {
+        roundStart: recentDraws[0].roundStart,
+        roundEnd: recentDraws[0].roundEnd,
+        winningNumbers: ((recentDraws[0] as any).winningNumbers as number[]).map(formatNumber2)
+      }
+    : null
+
   const drawMap = new Map(recentDraws.map((draw: any) => [draw.roundStart.toISOString(), draw]))
   const recentResults = recentTickets.map((ticket: any) => {
     const draw = drawMap.get(ticket.roundStart.toISOString())
@@ -107,6 +116,7 @@ export default defineEventHandler(async (event) => {
           pickedNumbers: (myCurrentTicket.pickedNumbers as number[]).map(formatNumber2)
         }
       : null,
-    recentResults
+    recentResults,
+    latestDraw
   }
 })

@@ -8,11 +8,12 @@ const submitError = ref('')
 const now = ref(Date.now())
 const displayDrawNumbers = ref<string[]>(Array.from({ length: 10 }, () => '00'))
 const isAnimatingDraw = ref(false)
+const isContinuousSpinning = ref(false)
 const latestDrawKey = ref('')
-const drawInitialized = ref(false)
 
 let spinIntervals: number[] = []
 let stopTimeouts: number[] = []
+let restartSpinTimeout: number | null = null
 
 const { data: vietlotState, refresh } = await useFetch<any>('/api/vietlot/state', {
   headers: process.server ? useRequestHeaders(['cookie']) : undefined
@@ -22,6 +23,7 @@ const eventData = computed(() => vietlotState.value?.event || null)
 const currentRound = computed(() => vietlotState.value?.currentRound || null)
 const myCurrentTicket = computed(() => vietlotState.value?.myCurrentTicket || null)
 const recentResults = computed(() => vietlotState.value?.recentResults || [])
+const latestDraw = computed(() => vietlotState.value?.latestDraw || null)
 const prizeConfig = computed(() => vietlotState.value?.prizeConfig || null)
 
 watch(myCurrentTicket, (ticket) => {
@@ -46,31 +48,57 @@ const numberLabel = (value: number) => `${value}`.padStart(2, '0')
 const randomDrawNumber = () => numberLabel(Math.floor(Math.random() * 99) + 1)
 
 const clearDrawTimers = () => {
+  if (!import.meta.client) return
+
   spinIntervals.forEach((timerId) => window.clearInterval(timerId))
   stopTimeouts.forEach((timerId) => window.clearTimeout(timerId))
+  if (restartSpinTimeout !== null) {
+    window.clearTimeout(restartSpinTimeout)
+    restartSpinTimeout = null
+  }
+
   spinIntervals = []
   stopTimeouts = []
+  isContinuousSpinning.value = false
+  isAnimatingDraw.value = false
 }
 
 const applyDrawNumbers = (numbers: string[]) => {
   displayDrawNumbers.value = [...numbers]
 }
 
-const animateDrawNumbers = (numbers: string[]) => {
-  if (numbers.length !== 10) {
-    applyDrawNumbers(numbers)
-    return
-  }
+const startContinuousSpin = () => {
+  if (!import.meta.client) return
+  if (!eventData.value || isAnimatingDraw.value || isContinuousSpinning.value) return
 
-  clearDrawTimers()
-  isAnimatingDraw.value = true
+  spinIntervals.forEach((timerId) => window.clearInterval(timerId))
+  spinIntervals = []
+
+  isContinuousSpinning.value = true
   displayDrawNumbers.value = Array.from({ length: 10 }, () => randomDrawNumber())
 
   spinIntervals = Array.from({ length: 10 }, (_, index) => {
     return window.setInterval(() => {
       displayDrawNumbers.value[index] = randomDrawNumber()
-    }, 70 + (index * 10))
+    }, 60 + (index * 8))
   })
+}
+
+const animateDrawNumbers = (numbers: string[]) => {
+  if (!import.meta.client) return
+
+  if (numbers.length !== 10) {
+    applyDrawNumbers(numbers)
+    return
+  }
+
+  if (!isContinuousSpinning.value) {
+    startContinuousSpin()
+  }
+
+  stopTimeouts.forEach((timerId) => window.clearTimeout(timerId))
+  stopTimeouts = []
+  isAnimatingDraw.value = true
 
   stopTimeouts = numbers.map((value, index) => {
     return window.setTimeout(() => {
@@ -79,8 +107,13 @@ const animateDrawNumbers = (numbers: string[]) => {
 
       if (index === numbers.length - 1) {
         isAnimatingDraw.value = false
+        isContinuousSpinning.value = false
+
+        restartSpinTimeout = window.setTimeout(() => {
+          startContinuousSpin()
+        }, 1200)
       }
-    }, 1000 + (index * 450))
+    }, 500 + (index * 350))
   })
 }
 
@@ -152,17 +185,19 @@ const prizeRules = computed(() => {
   ]
 })
 
-watch(recentResults, (rows) => {
-  const latest = rows?.[0]
-  if (!latest?.winningNumbers?.length) return
+watch(latestDraw, (draw) => {
+  if (!import.meta.client) return
 
-  const drawKey = `${latest.roundStart}`
-  const winningNumbers = latest.winningNumbers as string[]
+  const winningNumbers = draw?.winningNumbers as string[] | undefined
+  if (!winningNumbers?.length) return
 
-  if (!drawInitialized.value) {
-    applyDrawNumbers(winningNumbers)
+  const drawKey = `${draw.roundStart}`
+  if (!latestDrawKey.value) {
     latestDrawKey.value = drawKey
-    drawInitialized.value = true
+    applyDrawNumbers(winningNumbers)
+    restartSpinTimeout = window.setTimeout(() => {
+      startContinuousSpin()
+    }, 900)
     return
   }
 
@@ -172,9 +207,21 @@ watch(recentResults, (rows) => {
     return
   }
 
-  if (!isAnimatingDraw.value) {
+  if (!isAnimatingDraw.value && !isContinuousSpinning.value) {
     applyDrawNumbers(winningNumbers)
   }
+}, { immediate: true })
+
+watch(eventData, (value) => {
+  if (!import.meta.client) return
+
+  if (value) {
+    startContinuousSpin()
+    return
+  }
+
+  clearDrawTimers()
+  displayDrawNumbers.value = Array.from({ length: 10 }, () => '00')
 }, { immediate: true })
 
 onMounted(() => {
@@ -211,7 +258,7 @@ onMounted(() => {
             v-for="(num, index) in displayDrawNumbers"
             :key="index"
             class="flex h-12 items-center justify-center rounded-xl border border-amber-200/25 bg-slate-900/70 text-base font-black tracking-wide text-amber-100"
-            :class="isAnimatingDraw ? 'animate-pulse' : ''"
+            :class="(isAnimatingDraw || isContinuousSpinning) ? 'animate-pulse' : ''"
           >
             {{ num }}
           </div>
