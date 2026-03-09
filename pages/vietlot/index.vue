@@ -218,31 +218,22 @@ watch(latestDraw, (draw) => {
   if (!winningNumbers?.length) return
 
   const drawKey = `${draw.roundStart}`
-  if (!latestDrawKey.value) {
-    latestDrawKey.value = drawKey
-    applyDrawNumbers(winningNumbers)
-    return
-  }
-
   if (drawKey !== latestDrawKey.value) {
     latestDrawKey.value = drawKey
-    if (waitingForRoundResult.value && isAnimatingDraw.value) {
-      if (spinCanStop.value) {
-        stopWithFinalNumbers(winningNumbers)
-      }
-      else {
-        pendingResultNumbers.value = winningNumbers
-      }
-      return
-    }
+  }
 
-    applyDrawNumbers(winningNumbers)
+  // Nếu đang quay, mọi kết quả nhận được đều phải đi qua luồng dừng quay.
+  if (isAnimatingDraw.value && waitingForRoundResult.value) {
+    if (spinCanStop.value) {
+      stopWithFinalNumbers(winningNumbers)
+    }
+    else {
+      pendingResultNumbers.value = winningNumbers
+    }
     return
   }
 
-  if (!isAnimatingDraw.value) {
-    applyDrawNumbers(winningNumbers)
-  }
+  applyDrawNumbers(winningNumbers)
 }, { immediate: true })
 
 watch(() => currentRound.value?.roundStart, (value) => {
