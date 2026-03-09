@@ -30,6 +30,11 @@ const toNumberList = (value: unknown) => {
   return value.map(item => `${item}`.padStart(2, '0')).join(', ')
 }
 
+const toNumberArray = (value: unknown) => {
+  if (!Array.isArray(value)) return [] as string[]
+  return value.map(item => `${item}`.padStart(2, '0'))
+}
+
 const { data: eventData, refresh: refreshEvent } = await useFetch<any>(() => `/api/admin/events/${eventId.value}`, {
   headers: process.server ? useRequestHeaders(['cookie']) : undefined,
   watch: [eventId]
@@ -109,6 +114,51 @@ const { data: auctionsData, refresh: refreshAuctions } = await useFetch<any[]>((
 const { data: vietlotResults, refresh: refreshVietlotResults } = await useFetch<any[]>(() => `/api/admin/vietlot/results?eventId=${eventId.value}`, {
   headers: process.server ? useRequestHeaders(['cookie']) : undefined,
   watch: [eventId]
+})
+
+const selectedVietlotDrawId = ref('')
+const vietlotDetailLoading = ref(false)
+const vietlotDetailError = ref('')
+const vietlotDetail = ref<any | null>(null)
+const detailWinningSet = computed(() => new Set(toNumberArray(vietlotDetail.value?.draw?.winningNumbers)))
+
+const loadVietlotDrawDetail = async (drawId: string) => {
+  selectedVietlotDrawId.value = drawId
+  vietlotDetailLoading.value = true
+  vietlotDetailError.value = ''
+
+  try {
+    const result = await $fetch<any>(`/api/admin/vietlot/results/${drawId}?eventId=${eventId.value}`)
+    vietlotDetail.value = result
+  }
+  catch (error: any) {
+    vietlotDetailError.value = error?.data?.statusMessage || 'Không thể tải chi tiết lượt quay.'
+    vietlotDetail.value = null
+  }
+  finally {
+    vietlotDetailLoading.value = false
+  }
+}
+
+const isMatchedNumber = (num: string) => {
+  return detailWinningSet.value.has(num)
+}
+
+watch(vietlotResults, (rows) => {
+  if (!rows?.length) {
+    selectedVietlotDrawId.value = ''
+    vietlotDetail.value = null
+    return
+  }
+
+  if (!selectedVietlotDrawId.value) {
+    loadVietlotDrawDetail(rows[0].id)
+    return
+  }
+
+  if (!rows.some(row => row.id === selectedVietlotDrawId.value)) {
+    loadVietlotDrawDetail(rows[0].id)
+  }
 })
 
 const saveEventInfo = async () => {
@@ -358,7 +408,13 @@ const handleImageUpload = async (e: Event) => {
               </tr>
             </thead>
             <tbody>
-              <tr v-for="row in vietlotResults || []" :key="row.id" class="border-t align-top">
+              <tr
+                v-for="row in vietlotResults || []"
+                :key="row.id"
+                class="cursor-pointer border-t align-top transition-colors hover:bg-slate-50"
+                :class="selectedVietlotDrawId === row.id ? 'bg-amber-50/60' : ''"
+                @click="loadVietlotDrawDetail(row.id)"
+              >
                 <td class="px-3 py-2">{{ new Date(row.roundStart).toLocaleString() }}</td>
                 <td class="px-3 py-2 font-medium">{{ toNumberList(row.winningNumbers) }}</td>
                 <td class="px-3 py-2">{{ row.totalTickets }}</td>
@@ -372,6 +428,60 @@ const handleImageUpload = async (e: Event) => {
               </tr>
             </tbody>
           </table>
+        </div>
+
+        <div class="rounded-xl border bg-white p-4">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <h3 class="text-base font-semibold text-slate-900">Chi tiết người chơi theo lượt quay</h3>
+            <p v-if="vietlotDetail?.draw" class="text-sm text-slate-500">
+              Khung giờ: {{ new Date(vietlotDetail.draw.roundStart).toLocaleString() }}
+            </p>
+          </div>
+
+          <p v-if="vietlotDetail?.draw" class="mt-2 text-sm text-slate-700">
+            Bộ số trúng thưởng:
+            <span class="font-semibold text-amber-700">{{ toNumberList(vietlotDetail.draw.winningNumbers) }}</span>
+          </p>
+
+          <p v-if="vietlotDetailLoading" class="mt-3 text-sm text-slate-500">Đang tải chi tiết lượt quay...</p>
+          <p v-else-if="vietlotDetailError" class="mt-3 text-sm text-red-600">{{ vietlotDetailError }}</p>
+
+          <div v-else class="mt-3 overflow-x-auto">
+            <table class="min-w-full text-sm">
+              <thead class="bg-slate-50 text-left">
+                <tr>
+                  <th class="px-3 py-2">Email</th>
+                  <th class="px-3 py-2">Họ tên</th>
+                  <th class="px-3 py-2">Bộ số dự thưởng</th>
+                  <th class="px-3 py-2">Số trúng</th>
+                  <th class="px-3 py-2">Giải</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="ticket in vietlotDetail?.tickets || []" :key="ticket.id" class="border-t align-top">
+                  <td class="px-3 py-2">{{ ticket.email || '-' }}</td>
+                  <td class="px-3 py-2">{{ ticket.name || '-' }}</td>
+                  <td class="px-3 py-2">
+                    <div class="flex flex-wrap gap-1">
+                      <span
+                        v-for="num in ticket.pickedNumbers"
+                        :key="`${ticket.id}-${num}`"
+                        class="rounded border px-2 py-0.5 text-xs font-semibold"
+                        :class="isMatchedNumber(num) ? 'border-red-200 bg-red-50 text-red-700' : 'border-slate-200 bg-slate-50 text-slate-700'"
+                      >
+                        {{ num }}
+                      </span>
+                    </div>
+                  </td>
+                  <td class="px-3 py-2 font-semibold text-red-600">{{ ticket.matchCount }}</td>
+                  <td class="px-3 py-2">{{ ticket.prizeLabel }}</td>
+                </tr>
+                <tr v-if="!(vietlotDetail?.tickets && vietlotDetail.tickets.length)">
+                  <td colspan="5" class="px-3 py-6 text-center text-slate-500">Chưa có người chơi ở lượt quay này.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </template>
     </div>

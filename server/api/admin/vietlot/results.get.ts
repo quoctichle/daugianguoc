@@ -22,8 +22,7 @@ export default defineEventHandler(async (event) => {
     const tickets = await db.vietlotTicket.findMany({
       where: {
         eventId,
-        roundStart: draw.roundStart,
-        prizeTier: { not: null }
+        roundStart: draw.roundStart
       },
       select: {
         prizeTier: true
