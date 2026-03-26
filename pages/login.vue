@@ -1,10 +1,17 @@
 <script setup lang="ts">
 const { fetchSession } = useAuth()
 const { t } = useAppI18n()
+const route = useRoute()
+
+const redirectPath = computed(() => {
+  const redirect = route.query.redirect
+  const normalized = Array.isArray(redirect) ? redirect[0] : redirect
+  return normalized && normalized !== '' ? normalized : '/'
+})
 
 const currentUser = await fetchSession()
 if (currentUser) {
-  await navigateTo('/')
+  await navigateTo(redirectPath.value)
 }
 
 const form = reactive({
@@ -25,7 +32,7 @@ const submitLogin = async () => {
     })
 
     await fetchSession()
-    await navigateTo('/')
+    await navigateTo(redirectPath.value)
   }
   catch (error: any) {
     errorMessage.value = error?.data?.statusMessage || t('auth.loginFailed')
